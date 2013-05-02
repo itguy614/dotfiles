@@ -1,7 +1,7 @@
 export PATH="$HOME/bin:$PATH"
 
 # Load other dotfiles
-for file in ~/.{path,bash_prompt,exports,aliases,functions,extra}; do
+for file in ~/dotfiles/.{path,bash_prompt,exports,aliases,functions,extra}; do
 	[ -r "$file" ] && source "$file"
 done
 unset file
