@@ -15,4 +15,5 @@ shopt -s histappend
 # Autocorret typos in path names 
 shopt -s cdspell
 
-
+# Make sure ssh-agent variable are set correctly
+eval `ssh-agent`
