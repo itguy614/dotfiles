@@ -17,3 +17,6 @@ shopt -s cdspell
 
 # Make sure ssh-agent variable are set correctly
 eval `ssh-agent`
+
+# Set solorized dircolors
+eval `dircolors ~/dotfiles/dircolors`

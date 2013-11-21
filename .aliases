@@ -51,7 +51,7 @@ alias la="ls -la ${colorflag}"
 alias lsd='ls -l ${colorflag} | grep "^d"'
 
 # Show mount command output pretty and human readable
-alias mount='mount |column -t'
+alias lsmount='mount |column -t'
 
 # Limit ping to five packets
 alias ping='ping -c 5'
