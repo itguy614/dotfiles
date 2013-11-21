@@ -148,3 +148,59 @@ alias badge="tput bel"
 
 # Airplay has a bug connecting to remote speakers.  Restarting Core Audio is the fix
 alias fixairplay="sudo kill `ps -ax | grep 'coreaudiod' | grep 'sbin' |awk '{print $1}'`"
+
+# find top 5 big files
+alias findbig="find . -type f -exec ls -s {} \; | sort -n -r | head -5"
+
+# find folder changes fast
+alias recursivetime='find . -type f -print0 | xargs -0 ls --color=auto -lhtr'
+                
+# lists size of folders in ./
+alias foldersize="du --max-depth=1|sort -n|cut -f2|tr '\n' '\0'|xargs -0 du -sh 2>/dev/null"
+
+# human df
+alias df='df -h'
+
+# lists used tcp ports
+alias listusedports='netstat -tlnp'
+
+# finds your location by geoip or another in $1
+geoip() { wget -qO - http://freegeoip.net/xml/$1 | sed '3,12!d;s/<//g;s/>/: /g;s/\/.*//g' ; }
+
+# Extract about anything
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xvjf $1   ;;
+            *.tar.gz)    tar xvzf $1   ;;
+            *.bz2)       bunzip2 $1    ;;
+            *.rar)       unrar x $1    ;;
+            *.gz)        gunzip $1     ;;
+            *.tar)       tar xvf $1    ;;
+            *.tbz2)      tar xvjf $1   ;;
+            *.tgz)       tar xvzf $1   ;;
+            *.zip)       unzip $1      ;;
+            *.Z)         uncompress $1 ;;
+            *.7z)        7z x $1       ;;
+            *)           echo "'$1' cannot be extracted via >extract<" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# making unrar more convinient
+alias unrar='unrar e'
+alias unrarall='unrar e *.rar'
+
+# great extract and compress commands. mk* outputs to ..
+alias mktar='time { tar -cvf ../"${PWD##*/}.tar" *;echo "----------";echo " " ; echo "Execution time: "; }'
+alias mkxz='time { tar --xz -cvf ../"${PWD##*/}.tar.xz" *;echo "----------";echo " " ; echo "Execution time: "; }'
+alias mkbz2='time { tar -cvjf ../"${PWD##*/}.tar.bz2" *;echo "----------";echo " " ; echo "Execution time: "; }'
+alias mkgz='time { tar -cvzf ../"${PWD##*/}.tar.gz" *;echo "----------";echo " " ; echo "Execution time: "; }'
+alias mkrar='time { rar ar -m5 ../"${PWD##*/}.rar" *;echo "----------";echo " " ; echo "Execution time: "; }'
+alias untar='tar -xvf'
+alias unbz2='tar -xvjf'
+alias ungz='tar -xvzf'
+
+
