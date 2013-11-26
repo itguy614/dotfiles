@@ -19,4 +19,6 @@ shopt -s cdspell
 eval `ssh-agent`
 
 # Set solorized dircolors
+if [ "$(uname )" != "Darwin" ]; then
 eval `dircolors ~/dotfiles/dircolors`
+fi
