@@ -20,6 +20,7 @@ alias m="mate ."
 alias s="subl ."
 alias o="open"
 alias oo="open ."
+alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 
 # GIT shortcuts
 alias gs='git status '
@@ -78,7 +79,7 @@ alias gurl="curl --compressed"
 case `uname` in
 	Linux)
 		alias update='sudo apt-get update;sudo apt-get -y dist-upgrade';;
-	Mac)
+	Darwin)
 		alias update='sudo softwareupdate -i -a; brew update; brew upgrade; npm update npm -g; npm update -g';;
 esac
 
@@ -203,4 +204,5 @@ alias untar='tar -xvf'
 alias unbz2='tar -xvjf'
 alias ungz='tar -xvzf'
 
-
+# Alias for dtach to save session
+alias wm="dtach -A /tmp/dvtm -r winch dvtm"
