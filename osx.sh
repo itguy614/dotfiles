@@ -13,10 +13,10 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ###############################################################################
 
 # Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "MiniMe"
-sudo scutil --set HostName "MiniMe"
-sudo scutil --set LocalHostName "MiniMe"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "MiniMe"
+# sudo scutil --set ComputerName "MiniMe"
+# sudo scutil --set HostName "MiniMe"
+# sudo scutil --set LocalHostName "MiniMe"
+# sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "MiniMe"
 
 # Set standby delay to 24 hours (default is 1 hour)
 sudo pmset -a standbydelay 86400
@@ -42,7 +42,7 @@ defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
 
 # Disable smooth scrolling
 # (Uncomment if you’re on an older Mac that messes up the animation)
-#defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false
+# defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false
 
 # Disable opening and closing window animations
 defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
@@ -76,7 +76,7 @@ defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
 defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
 
 # Disable the crash reporter
-#defaults write com.apple.CrashReporter DialogType -string "none"
+defaults write com.apple.CrashReporter DialogType -string "none"
 
 # Set Help Viewer windows to non-floating mode
 defaults write com.apple.helpviewer DevMode -bool true
@@ -94,7 +94,7 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo Hos
 systemsetup -setrestartfreeze on
 
 # Never go into computer sleep mode
-systemsetup -setcomputersleep Off > /dev/null
+# systemsetup -setcomputersleep Off > /dev/null
 
 # Check for software updates daily, not just once per week
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
@@ -466,13 +466,13 @@ hash tmutil &> /dev/null && sudo tmutil disablelocal
 ###############################################################################
 
 # Enable the debug menu in Address Book
-defaults write com.apple.addressbook ABShowDebugMenu -bool true
+# defaults write com.apple.addressbook ABShowDebugMenu -bool true
 
 # Enable Dashboard dev mode (allows keeping widgets on the desktop)
-defaults write com.apple.dashboard devmode -bool true
+# defaults write com.apple.dashboard devmode -bool true
 
 # Enable the debug menu in iCal (pre-10.8)
-defaults write com.apple.iCal IncludeDebugMenu -bool true
+# defaults write com.apple.iCal IncludeDebugMenu -bool true
 
 # Use plain text mode for new TextEdit documents
 defaults write com.apple.TextEdit RichText -int 0
@@ -502,34 +502,6 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true
 # defaults write com.google.Chrome ExtensionInstallSources -array "https://*.github.com/*" "http://userscripts.org/*"
 # defaults write com.google.Chrome.canary ExtensionInstallSources -array "https://*.github.com/*" "http://userscripts.org/*"
 
-###############################################################################
-# SizeUp.app                                                                  #
-###############################################################################
-
-# Start SizeUp at login
-defaults write com.irradiatedsoftware.SizeUp StartAtLogin -bool true
-
-# Don’t show the preferences window on next start
-defaults write com.irradiatedsoftware.SizeUp ShowPrefsOnNextStart -bool false
-
-###############################################################################
-# Transmission.app                                                            #
-###############################################################################
-
-# Use `~/Documents/Torrents` to store incomplete downloads
-# defaults write org.m0k.transmission UseIncompleteDownloadFolder -bool true
-# defaults write org.m0k.transmission IncompleteDownloadFolder -string "${HOME}/Documents/Torrents"
-
-# Don’t prompt for confirmation before downloading
-# defaults write org.m0k.transmission DownloadAsk -bool false
-
-# Trash original torrent files
-# defaults write org.m0k.transmission DeleteOriginalTorrent -bool true
-
-# Hide the donate message
-# defaults write org.m0k.transmission WarningDonate -bool false
-# Hide the legal disclaimer
-# defaults write org.m0k.transmission WarningLegal -bool false
 
 ###############################################################################
 # Twitter.app                                                                 #
@@ -561,7 +533,7 @@ defaults write com.twitter.twitter-mac HideInBackground -bool true
 ###############################################################################
 
 for app in "Address Book" "Calendar" "Contacts" "Dashboard" "Dock" "Finder" \
-	"Mail" "Safari" "SizeUp" "SystemUIServer" "Terminal" "Transmission" \
+	"Mail" "Safari" "SystemUIServer" "Terminal" \
 	"Twitter" "iCal" "iTunes"; do
 	killall "$app" > /dev/null 2>&1
 done
