@@ -9,6 +9,8 @@ alias .5='cd ../../../../..'
 alias ~="cd ~" # `cd` is probably faster to type though
 alias -- -="cd -"
 
+alias resource='source ~/.bash_profile'
+
 # Shortcuts
 alias d="cd ~/Documents/Dropbox"
 alias p="cd ~/Projects"
@@ -78,7 +80,7 @@ alias gurl="curl --compressed"
 # update the system with the latest software
 case `uname` in
 	Linux)
-		alias update='sudo apt-get update;sudo apt-get -y dist-upgrade';;
+		alias update='sudo apt-get update;sudo apt-get -y dist-upgrade;sudo apt-get -y autoremove';;
 	Darwin)
 		alias update='sudo softwareupdate -i -a; brew update; brew upgrade; npm update npm -g; npm update -g';;
 esac
