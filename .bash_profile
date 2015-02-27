@@ -23,8 +23,6 @@ if [ "$(uname )" != "Darwin" ]; then
 	eval `dircolors ~/dotfiles/dircolors`
 fi
 
-export PATH=~/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/mysql/bin:/usr/local/sbin:.
-
 # Set to some value in order to disable tmux
 tmux=''
 

@@ -1,5 +1,5 @@
-export PATH=.:$PATH:/usr/local/mysql/bin:/usr/local/sbin:~/bin:/usr/local/bin
+export PATH=.:/usr/local/mysql/bin:/usr/local/sbin:~/bin:/usr/local/bin:$PATH
 
 if [ "$(uname )" == "Darwin" ]; then
-    export PATH=$PATH:$(brew --prefix coreutils)/libexec/gnubin;
+    export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH;
 fi
