@@ -39,6 +39,8 @@ alias gx='gitx --all'
 alias got='git '
 alias get='git '
 
+alias phpcs='phpcs --standard=PSR2 --report=full --extensions=php '
+
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
 	colorflag="--color"
