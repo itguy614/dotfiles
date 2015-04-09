@@ -86,7 +86,7 @@ case `uname` in
 	Linux)
 		alias update='sudo apt-get update;sudo apt-get -y dist-upgrade;sudo apt-get -y autoremove';;
 	Darwin)
-		alias update='sudo softwareupdate -i -a; brew update; brew upgrade; npm update npm -g; npm update -g';;
+		alias update='sudo softwareupdate -i -a; brew update; brew upgrade; npm update npm -g; npm update -g; sudo gem update --system; sudo gem update';;
 esac
 
 # IP addresses
