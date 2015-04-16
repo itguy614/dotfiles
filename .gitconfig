@@ -38,7 +38,7 @@
   log = true
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = subl -w
+	editor = nano
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path =
