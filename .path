@@ -1,4 +1,4 @@
-export PATH=.:/usr/local/mysql/bin:/usr/local/sbin:~/bin:/usr/local/bin:$PATH
+export PATH=.:./bin:/usr/local/mysql/bin:/usr/local/sbin:~/bin:/usr/local/bin:~/.composer/vendor/bin:$PATH
 
 if [[ "$(uname )" == "Darwin" ]]; then
     export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH;
