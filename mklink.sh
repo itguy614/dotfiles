@@ -9,3 +9,4 @@ ln -s ~/dotfiles/.gitignore_global ~/.gitignore_global
 ln -s ~/dotfiles/.editorconfig ~/.editorconfig
 ln -s ~/dotfiles/.hushlogin ~/.hushlogin
 ln -s ~/dotfiles/.zshrc ~/.zshrc
+ln -s ~/dotfiles/.ansible ~/.ansible.cfg
