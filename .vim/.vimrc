@@ -10,25 +10,25 @@ set number							        " Activate line numbers
 set ch=2                                    " Make the command line two lines
 set vb                                      " Turn on the visual bell
 set backspace=2                             " Allow backspacing over indent, eol, and the start of an indent
-set nowrap
-
+set nowrap                                  " Do not autowrap long lines
+set hidden                                  " Allow reuse of the same window
+set wildmenu                                " Turn on improved command-line completion
+set confirm                                 " Istead of failing a command, ask to save
+set mouse=a                                 " Allow the use of the mouse in all modes
 
 
 " -- Status Line ---------------------------------------------------"
 set laststatus=2
-" set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \Line:\ %l/%L[%p%%]\ Col:\ %v
-set showcmd                                 " Don't show the current command in the lower right
-set showmode                                " Show the current mode
-
+set showcmd
 
 " -- Printing ------------------------------------------------------"
 set printoptions=header:0,duplex:long,paper:letter
 
 
 " -- Visuals ------------------------------------------------------"
-colorscheme navajo-night				    " Color theme
-set guifont=Fira_Code:h14          		    " Use Hack as the font
+set background=dark                         " Use a dark color background
+colorscheme solarized   				    " Color theme
+set guifont=Fira_Code:h14          		    " Use my coding font
 set linespace=12						    " Macvim specific line-height
 
 set guioptions-=l						    " Disable left scroll bar
@@ -41,6 +41,10 @@ set cursorline
 set nocursorcolumn
 
 
+
+" -- Backups ------------------------------------------------------"
+set noswapfile
+set nobackup
 
 
 
@@ -56,6 +60,7 @@ set autoindent
 set hlsearch							" Highlight search results
 set incsearch							" Do incremental searching
 set wrapscan                            " Set the search scan to wrap long lines
+set ignorecase                          " Ignore case when searching
 
 
 
@@ -80,6 +85,9 @@ nmap <Leader>ep :tabedit ~/.vim/plugins.vim<cr>
 
 " Add simple highlight removal
 nmap <Leader><space> :nohlsearch<cr>
+
+" Quickly search for a tag
+nmap <leader>f :tag<space>
 
 
 

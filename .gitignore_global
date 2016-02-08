@@ -1,3 +1,12 @@
+# ### CTags
+tags
+
+# ### Composer
+vendor/*
+
+# ### Node Modules
+node_modules/*
+
 # ### LibreOffice
 # LibreOffice locks
 .~lock.*#
@@ -27,7 +36,6 @@
 
 # Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*

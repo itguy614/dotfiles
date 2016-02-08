@@ -7,6 +7,7 @@ call vundle#begin()						            " Begin plugin definitions
 	Plugin 'scrooloose/nerdtree'				    " Nerdtree
 	Plugin 'ctrlpvim/ctrlp.vim'				        " Control-P
     Plugin 'nathanaelkane/vim-indent-guides'        " Indent guides
+    Plugin 'itchyny/lightline.vim'                  " Lightline for status bar
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
 
@@ -22,10 +23,11 @@ nmap <D-1> :NERDTreeToggle<cr>
 "/
 "/ Ctrl-P
 "/
-let g:ctrlp_custom_ignore = 'node_modules\DS_Store\|git'
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
 let g:ctrlp_match_window = 'bottom,order:btt,min:5,max:25'
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_root_markers = ['.git']
+let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 nmap <D-p> :CtrlP<cr>
 nmap <D-r> :CtrlPBufTag<cr>
 nmap <D-e> :CtrlPMRUFiles<cr>
@@ -36,3 +38,10 @@ nmap <D-e> :CtrlPMRUFiles<cr>
 let g:indent_guides_color_change_percent = 3
 let g:indent_guides_guide_size = 1
 let g:indent_guides_enable_on_vim_startup = 1
+
+"/
+"/ Lightline
+"/
+let g:lightline = {
+    \ 'colorscheme': 'solarized_dark',
+    \ }

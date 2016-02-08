@@ -26,7 +26,7 @@ hi MoreMsg term=bold ctermfg=green gui=none guifg=#d174a8
 hi ModeMsg term=bold cterm=bold gui=none
 hi LineNr term=underline ctermfg=darkcyan  gui=none guifg=#395b73 guibg=#2d4759
 hi Question term=standout ctermfg=darkgreen gui=none guifg=#d174a8
-hi StatusLine term=bold,reverse cterm=bold,reverse gui=none guifg=#2b6666 guibg=#50bfbf
+hi StatusLine term=bold,reverse cterm=bold,reverse gui=none guifg=#2b6666 guibg=#ffffff
 hi StatusLineNC term=reverse cterm=reverse gui=none guifg=#a1a1a1 guibg=Black
 hi VertSplit term=reverse cterm=reverse gui=none guifg=Black guibg=#8f8f8f
 hi Title term=bold ctermfg=green gui=none guifg=#74ff74
