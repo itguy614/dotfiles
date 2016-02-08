@@ -33,8 +33,8 @@ hi Title term=bold ctermfg=green gui=none guifg=#74ff74
 hi PmenuSel term=bold,reverse cterm=bold,reverse gui=none guifg=#e7e77f guibg=Black
 hi Pmenu term=bold,reverse cterm=bold,reverse gui=none guifg=Black guibg=#e7e77f
 hi MoreMsg term=bold,reverse cterm=bold,reverse gui=none guifg=#ffff00
-hi CursorLine guibg=#36556b
-hi CursorLineNr term=bold guifg=#466f8c
+hi CursorLine term=none cterm=none guibg=#36556b
+hi CursorLineNr term=bold cterm=none guifg=#466f8c
 
 hi VisualNOS term=bold,underline cterm=bold,underline gui=reverse guifg=#414141 guibg=Black
 hi WarningMsg term=standout ctermfg=darkred gui=none guifg=Cyan
@@ -50,7 +50,7 @@ hi lCursor guifg=fg guibg=bg
 hi Match term=bold,reverse ctermbg=Blue ctermfg=Yellow cterm=bold,reverse gui=none,reverse guifg=Blue guibg=Yellow
 
 " Colours for syntax highlighting
-hi Comment term=bold ctermfg=darkblue guifg=#e7e77f
+hi Comment term=bold ctermfg=darkgray guifg=#e7e77f
 hi Constant term=underline ctermfg=darkred guifg=#ffc213
 hi Special term=bold ctermfg=darkgreen guifg=#bfbfef
 hi Identifier term=underline ctermfg=darkcyan cterm=NONE guifg=#ef9f9f
