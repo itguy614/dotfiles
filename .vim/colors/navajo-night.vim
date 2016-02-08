@@ -1,12 +1,10 @@
-" Vim colour file
-" Maintainer: Matthew Hawkins <matt@mh.dropbear.id.au>
-" Last Change:	Mon, 22 Apr 2002 15:28:04 +1000
-" URI: http://mh.dropbear.id.au/vim/navajo-night.png
+" Vim color file
 "
-" This colour scheme uses a "navajo-black" background
-" I have added colours for the statusbar and for spell checking 
-" as taken from Cream (http://cream.sf.net/) 
-
+" This is inspired by the popular theme navajo-night and has been tweaked to
+" my preferences.
+"
+" Kurt Wolf <itguy614@gmail.com>
+"
 
 set background=dark
 hi clear
@@ -17,7 +15,6 @@ endif
 let g:colors_name = "navajo-night"
 
 hi Normal ctermfg=White guifg=White guibg=#304c60
-" hi Normal ctermfg=White guifg=White guibg=#134371
 
 hi SpecialKey term=bold ctermfg=darkblue guifg=Yellow
 hi NonText term=bold ctermfg=darkblue cterm=bold gui=none guifg=#7f7f7f
@@ -27,19 +24,18 @@ hi IncSearch term=reverse cterm=reverse gui=reverse
 hi Search term=reverse ctermbg=White ctermfg=Black cterm=reverse guibg=Black guifg=Yellow
 hi MoreMsg term=bold ctermfg=green gui=none guifg=#d174a8
 hi ModeMsg term=bold cterm=bold gui=none
-hi LineNr term=underline ctermfg=darkcyan ctermbg=grey gui=none guifg=#5ad5d5
+hi LineNr term=underline ctermfg=darkcyan  gui=none guifg=#395b73 guibg=#2d4759
 hi Question term=standout ctermfg=darkgreen gui=none guifg=#d174a8
-hi StatusLine term=bold,reverse cterm=bold,reverse gui=none guifg=Black guibg=#e7e77f
+hi StatusLine term=bold,reverse cterm=bold,reverse gui=none guifg=#2b6666 guibg=#50bfbf
 hi StatusLineNC term=reverse cterm=reverse gui=none guifg=#a1a1a1 guibg=Black
 hi VertSplit term=reverse cterm=reverse gui=none guifg=Black guibg=#8f8f8f
 hi Title term=bold ctermfg=green gui=none guifg=#74ff74
 hi PmenuSel term=bold,reverse cterm=bold,reverse gui=none guifg=#e7e77f guibg=Black
 hi Pmenu term=bold,reverse cterm=bold,reverse gui=none guifg=Black guibg=#e7e77f
 hi MoreMsg term=bold,reverse cterm=bold,reverse gui=none guifg=#ffff00
+hi CursorLine guibg=#36556b
+hi CursorLineNr term=bold guifg=#466f8c
 
-"+++ Cream:
-"hi Visual term=reverse cterm=reverse gui=reverse guifg=#3f3f3f guibg=White
-"+++
 hi VisualNOS term=bold,underline cterm=bold,underline gui=reverse guifg=#414141 guibg=Black
 hi WarningMsg term=standout ctermfg=darkred gui=none guifg=Cyan
 hi WildMenu term=standout ctermfg=White ctermbg=darkyellow guifg=White guibg=Blue
