@@ -55,12 +55,6 @@ let g:indent_guides_space_guides=0
 "/
 "/ Lightline
 "/
-if has('gui_running')
-    let g:lightline = {
-        \ 'colorscheme': 'solarized_dark',
-        \ }
-else
-    let g:lightline = {
-        \ 'colorscheme': 'solarized',
-        \ }
-endif
+let g:lightline = {
+    \ 'colorscheme': 'solarized_dark',
+    \ }

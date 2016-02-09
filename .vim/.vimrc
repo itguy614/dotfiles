@@ -26,13 +26,9 @@ set printoptions=header:0,duplex:long,paper:letter
 
 
 " -- Visuals ------------------------------------------------------"
-if has('gui_running')
-    set background=dark                     " Use a dark background for the GUI
-else
-    set background=light                    " Use a light background for terminal
-endif
-set t_Co=256
-let g:solarized_termcolors=256
+set background=dark                         " Use a dark background
+set t_Co=256                                " Support 256 colors in the terminal
+let g:solarized_termcolors=256              " Use 256 colors
 colorscheme solarized   				    " Color theme
 set guifont=Fira_Code:h14          		    " Use my coding font
 set linespace=12						    " Macvim specific line-height
