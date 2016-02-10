@@ -16,7 +16,7 @@ shopt -s histappend
 shopt -s cdspell
 
 # Make sure ssh-agent variable are set correctly
-eval `ssh-agent`
+eval `ssh-agent` >&3 2>&1
 
 # Set solorized dircolors
 if [ "$(uname )" != "Darwin" ]; then
