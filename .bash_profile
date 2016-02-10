@@ -20,7 +20,7 @@ eval `ssh-agent`
 
 # Set solorized dircolors
 if [ "$(uname )" != "Darwin" ]; then
-	eval `dircolors ~/dotfiles/dircolors`
+	eval `dircolors ~/dotfiles/dircolors/dircolors.ansi-dark`
 fi
 
 # Set to some value in order to disable tmux
