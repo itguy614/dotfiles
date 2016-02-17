@@ -93,6 +93,19 @@ nmap <leader>f :tag<space>
 
 
 
+" -- Laravel Specific ---------------------------------------------"
+nmap <Leader>lr :e app/Http/routes.php<cr>
+nmap <Leader>lc :e app/Http/Controllers/<cr>
+nmap <Leader>lm :e app/<cr>
+nmap <Leader>lv :e resources/views/<cr>
+nmap <Leader>la :!php artisan 
+nmap <Leader>lam :!php artisan make:
+" nmap <Leader>lar :new | r !php artisan route:list
+nmap <Leader><leader>lc :CtrlP<cr>app/Http/Controllers/
+nmap <Leader><leader>lm :CtrlP<cr>app/
+nmap <Leader><leader>lv :CtrlP<cr>resources/views/
+
+
 " -- Auto-Commands ------------------------------------------------"
 
 "Automatically source the CimRC file on save.
