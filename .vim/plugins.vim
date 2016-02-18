@@ -11,7 +11,8 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'itchyny/lightline.vim'                  " Lightline for status bar
     Plugin 'majutsushi/tagbar'                      " Nice tag browser for the current file
     Plugin 'SirVer/ultisnips'                       " Use Ultisnips for snippets
-    Plugin 'honza/vim-snippets'
+    Plugin 'honza/vim-snippets'                     " Collection of starter snippets
+    Plugin 'vimwiki/vimwiki'                        " Vim Wiki
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
@@ -23,6 +24,22 @@ filetype plugin indent on
 "/ Tagbar
 "/
 nmap <D-2> :TagbarToggle<cr>
+
+"/
+"/ Vim Wiki
+"/
+" Default Bindings
+" <Leader>ww Open the default wiki index file
+" <Leader>wt Open default wiki index file in a new tab
+" <Leader>ws Select and open wiki index file
+" <Leader>wd Delete wiki file you are in
+" <Leader>wr Rename wiki file you are in
+" <Enter> Follow/Create wiki link
+" <Shift-Enter> Split and follow/create wiki link
+" <Ctrl-Enter> Vertical split and follow/create wiki link
+" <Backspace> Go back to parent (previous) wiki link
+" <Tab> Find next wiki link
+" <Shift-Tab> Find previous wiki link
 
 "/
 "/ Ultisnips

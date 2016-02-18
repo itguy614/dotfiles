@@ -15,7 +15,7 @@ set hidden                                  " Allow reuse of the same window
 set wildmenu                                " Turn on improved command-line completion
 set confirm                                 " Istead of failing a command, ask to save
 set mouse=a                                 " Allow the use of the mouse in all modes
-
+set spelllang=en_us                         " Use the English spellings
 
 " -- Status Line ---------------------------------------------------"
 set laststatus=2
@@ -90,6 +90,9 @@ nmap <Leader><space> :nohlsearch<cr>
 
 " Quickly search for a tag
 nmap <leader>f :tag<space>
+
+" Toggle spell checking
+nmap <leader>ss :set spell!<cr>
 
 
 
