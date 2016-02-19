@@ -42,12 +42,13 @@ set guioptions-=e						    " Use non-gui tabs
 set cursorline
 set nocursorcolumn
 
+" Color column 80 and everything past 120
+let &colorcolumn="80,".join(range(120,999),",")
 
 
 " -- Backups ------------------------------------------------------"
 set noswapfile
 set nobackup
-
 
 
 " -- Tabs ---------------------------------------------------------"
@@ -111,10 +112,11 @@ nmap <Leader><leader>lv :CtrlP<cr>resources/views/
 
 " -- Auto-Commands ------------------------------------------------"
 
-"Automatically source the CimRC file on save.
+" Automatically source tese files on save.
 augroup autosourcing
 	autocmd!
 	autocmd BufWritePost .vimrc source %
+    autocmd BufWritePost plugins.vim source %
 augroup END
 
 
