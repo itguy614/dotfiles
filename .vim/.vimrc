@@ -46,6 +46,11 @@ set nocursorcolumn
 let &colorcolumn="80,".join(range(120,999),",")
 
 
+" -- File Associations  ------------------------------------------------------"
+" associate *.md with markdown filetype
+au BufRead,BufNewFile *.md set filetype=markdown
+
+
 " -- Backups ------------------------------------------------------"
 set noswapfile
 set nobackup
