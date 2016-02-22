@@ -8,6 +8,7 @@ set nocompatible                            " Fix the backspace keys
 set backspace=indent,eol,start				" Make backspace behave like every other editor
 let mapleader = ','						    " The default leader is \, but a comma is much better
 set number							        " Activate line numbers
+set numberwidth=6                           " Create a little wider number width area
 set ch=2                                    " Make the command line two lines
 set vb                                      " Turn on the visual bell
 set backspace=2                             " Allow backspacing over indent, eol, and the start of an indent
@@ -97,6 +98,10 @@ nmap <leader>f :tag<space>
 nmap <leader>ss :set spell!<cr>
 
 
+" Open Journal
+nmap <leader>jj :call Journal()<cr>
+
+
 
 " -- Laravel Specific ---------------------------------------------"
 nmap <Leader>lr :e app/Http/routes.php<cr>
@@ -135,4 +140,22 @@ function! HasPaste()
         return 'PASTE MODE  '
     endif
     return ''
+endfunction
+
+function! Journal()
+    let filepath = expand("~") . "/journal/" . strftime("%Y") . "/" . strftime("%m")
+    let filename = strftime("%Y%m%d") . ".md"
+    let fullpath = filepath . "/" . filename
+    
+    " If the file path does not exist, then create it
+    if !isdirectory(filepath)
+        call mkdir(filepath, "p")
+    endif
+
+    " If the file exists, open it
+    if filereadable(fullpath)
+        execute "vsplit" fullpath
+    endif
+
+    return ""
 endfunction
