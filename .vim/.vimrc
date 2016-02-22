@@ -4,6 +4,7 @@ so ~/.vim/plugins.vim						" Include all plugins
 
 syntax enable                               " Turn on syntax highlighting
 
+set nocompatible                            " Fix the backspace keys
 set backspace=indent,eol,start				" Make backspace behave like every other editor
 let mapleader = ','						    " The default leader is \, but a comma is much better
 set number							        " Activate line numbers
@@ -44,11 +45,6 @@ set nocursorcolumn
 
 " Color column 80 and everything past 120
 let &colorcolumn="80,".join(range(120,999),",")
-
-
-" -- File Associations  ------------------------------------------------------"
-" associate *.md with markdown filetype
-au BufRead,BufNewFile *.md set filetype=markdown
 
 
 " -- Backups ------------------------------------------------------"
@@ -124,6 +120,11 @@ augroup autosourcing
     autocmd BufWritePost plugins.vim source %
 augroup END
 
+" Set syntac highlighting for certain files
+augroup autofiletype
+    autocmd!
+    autocmd BufRead,BufNewFile *.md set filetype=markdown
+augroup END
 
 
 " -- Functions ---------------------------------------------------"
