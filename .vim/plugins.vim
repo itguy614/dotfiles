@@ -13,6 +13,7 @@ call vundle#begin()						            " Begin plugin definitions
     " Plugin 'SirVer/ultisnips'                       " Use Ultisnips for snippets
     " Plugin 'honza/vim-snippets'                     " Collection of starter snippets
     Plugin 'vimwiki/vimwiki'                        " Vim Wiki
+    Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
