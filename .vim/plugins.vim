@@ -8,10 +8,7 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'scrooloose/nerdtree'				    " Nerdtree
     Plugin 'ctrlpvim/ctrlp.vim'				        " Control-P
     Plugin 'nathanaelkane/vim-indent-guides'        " Indent guides
-    Plugin 'itchyny/lightline.vim'                  " Lightline for status bar
     Plugin 'majutsushi/tagbar'                      " Nice tag browser for the current file
-    " Plugin 'SirVer/ultisnips'                       " Use Ultisnips for snippets
-    " Plugin 'honza/vim-snippets'                     " Collection of starter snippets
     Plugin 'vimwiki/vimwiki'                        " Vim Wiki
     Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
 

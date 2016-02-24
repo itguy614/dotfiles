@@ -30,8 +30,7 @@ set printoptions=header:0,duplex:long,paper:letter
 " -- Visuals ------------------------------------------------------"
 set background=dark                         " Use a dark background
 set t_Co=256                                " Support 256 colors in the terminal
-let g:solarized_termcolors=256              " Use 256 colors
-colorscheme solarized   				    " Color theme
+colorscheme hybrid_reverse   				" Color theme
 set guifont=Fira_Code:h14          		    " Use my coding font
 set linespace=12						    " Macvim specific line-height
 
