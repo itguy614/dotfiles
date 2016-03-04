@@ -12,3 +12,11 @@
 --exclude=*.css
 --exclude=*.sass
 --exclude=*.scss
+--exclude=bootstrap/cache/compiled.php
+--exclude=vendor/*
+--exclude=bower_components
+--sort=yes
+--recurse
+--tag-relative
+--PHP-kinds=+cf
+    

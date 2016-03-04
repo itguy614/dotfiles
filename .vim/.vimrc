@@ -10,7 +10,7 @@ let mapleader = ','						    " The default leader is \, but a comma is much bett
 set number							        " Activate line numbers
 set numberwidth=6                           " Create a little wider number width area
 set ch=2                                    " Make the command line two lines
-set vb                                      " Turn on the visual bell
+set noerrorbells visualbell t_vb=           " No more bells
 set backspace=2                             " Allow backspacing over indent, eol, and the start of an indent
 set nowrap                                  " Do not autowrap long lines
 set hidden                                  " Allow reuse of the same window
@@ -96,7 +96,6 @@ nmap <leader>f :tag<space>
 " Toggle spell checking
 nmap <leader>ss :set spell!<cr>
 
-
 " Open Journal
 nmap <leader>jj :call Journal()<cr>
 
@@ -127,7 +126,7 @@ augroup END
 " Set syntac highlighting for certain files
 augroup autofiletype
     autocmd!
-    autocmd BufRead,BufNewFile *.md set filetype=markdown
+    autocmd BufRead,BufNewFile *.md set filetype=markdown|set wrap|set linebreak|set nolist|set textwidth=0|set wrapmargin=0
 augroup END
 
 

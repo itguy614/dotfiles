@@ -10,6 +10,18 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'nathanaelkane/vim-indent-guides'        " Indent guides
     Plugin 'majutsushi/tagbar'                      " Nice tag browser for the current file
     Plugin 'vimwiki/vimwiki'                        " Vim Wiki
+    Plugin 'jiangmiao/auto-pairs'                   " Auto insert closing brackets
+    Plugin 'sirver/ultisnips'                       " Snippet manager
+    Plugin 'tpope/vim-surround'                     "
+    Plugin 'StanAngeloff/php.vim'                   " Updated PHP syntax definition
+    Plugin 'arnaud-lb/vim-php-namespace'            " Easy way to insert namespace and use statements
+    Plugin 'craigemery/vim-autotag'                 " Automatically regenerate tag file
+    Plugin 'Shougo/vimproc.vim'
+    Plugin 'Shougo/unite.vim'
+    Plugin 'rstacruz/vim-fastunite'
+    Plugin 'Shougo/neomru.vim'
+    Plugin 'Shougo/unite-outline'
+    Plugin 'tsukkee/unite-tag'
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
@@ -39,14 +51,16 @@ nmap <D-2> :TagbarToggle<cr>
 " <Shift-Tab> Find previous wiki link
 
 "/
-"/ Ultisnips
+"/ Snip
 "/
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+nmap <leader>es :UltiSnipsEdit<cr>
 
 "/
 "/ NERDTree
@@ -63,8 +77,18 @@ let g:ctrlp_match_window = 'bottom,order:btt,min:5,max:25'
 "let g:ctrlp_root_markers = ['.git']
 let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 nmap <D-p> :CtrlP<cr>
-nmap <D-r> :CtrlPBufTag<cr>
+"nmap <D-r> :CtrlPBufTag<cr>
 nmap <D-e> :CtrlPMRUFiles<cr>
+
+
+"/
+"/ Unite
+"/
+let g:unite_source_history_yank_enable = 1
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+let g:unite_source_file_async_command = 'ag --follow --nocolor --nogroup --skip-vcs-ignores --hidden -g ""'
+nmap <leader>t :Unite -no-split -buffer-name=Tags -start-insert tag<cr>
+nmap <leader>o :Unite -no-split -buffer-name=Files -start-insert file_rec<cr>
 
 "/
 "/ Indent Guides
@@ -86,9 +110,26 @@ let g:indent_guides_start_level=2
 "Use this option to control whether the plugin considers spaces as indention.
 let g:indent_guides_space_guides=0
 
+
 "/
-"/ Lightline
+"/ vim-php-namespace
 "/
-let g:lightline = {
-    \ 'colorscheme': 'solarized_dark',
-    \ }
+
+" Import classes (add use statements)
+function! IPhpInsertUse()
+    call PhpInsertUse()
+    call feedkeys('a',  'n')
+endfunction
+
+function! IPhpExpandClass()
+    call PhpExpandClass()
+    call feedkeys('a', 'n')
+endfunction
+
+augroup phpnamespace
+    autocmd!
+    autocmd FileType php inoremap <Leader>n <Esc>:call IPhpInsertUse()<CR>
+    autocmd FileType php noremap <Leader>n :call PhpInsertUse()<CR>
+    autocmd FileType php inoremap <Leader>e <Esc>:call IPhpExpandClass()<CR>
+    autocmd FileType php noremap <Leader>e :call PhpExpandClass()<CR>
+augroup END
