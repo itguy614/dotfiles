@@ -22,6 +22,7 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'Shougo/neomru.vim'
     Plugin 'Shougo/unite-outline'
     Plugin 'tsukkee/unite-tag'
+    Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
