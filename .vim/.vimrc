@@ -15,24 +15,34 @@ set backspace=2                             " Allow backspacing over indent, eol
 set nowrap                                  " Do not autowrap long lines
 set hidden                                  " Allow reuse of the same window
 set wildmenu                                " Turn on improved command-line completion
+set wildignore=.git,*.swp,*.jpg,*.png,*.gif
+set wildmode=longest,list
 set confirm                                 " Istead of failing a command, ask to save
 set mouse=a                                 " Allow the use of the mouse in all modes
 set spelllang=en_us                         " Use the English spellings
+set lazyredraw                              " Lazyredraw attempts to solve Vim lag by reducing the amount of processing required. When enabled, any action that is not typed will not cause the screen to redraw.
+set ttyfast                                 "
+set autoread                                " Auto reload a file if it has changed
+
+
 
 " -- Status Line ---------------------------------------------------"
 set laststatus=2
 set showcmd
 
+
+
 " -- Printing ------------------------------------------------------"
 set printoptions=header:0,duplex:long,paper:letter
+
 
 
 " -- Visuals ------------------------------------------------------"
 set background=dark                         " Use a dark background
 set t_Co=256                                " Support 256 colors in the terminal
-colorscheme hybrid_reverse   				" Color theme
+colorscheme hybrid_material   				" Color theme
 set guifont=Fira_Code:h14          		    " Use my coding font
-set linespace=12						    " Macvim specific line-height
+" set linespace=12						    " Macvim specific line-height
 
 set guioptions-=l						    " Disable left scroll bar
 set guioptions-=L						    " Disable left scroll in a split
@@ -42,14 +52,27 @@ set guioptions-=R						    " Disable right scroll bar in a split
 set guioptions-=e						    " Use non-gui tabs
 set cursorline
 set nocursorcolumn
+set ruler                                   " Display col/col on statusline
+
+" Make sure there is at least one line below and above the current line when
+" scrolling.
+if !&scrolloff
+    set scrolloff=1
+endif
+if !&sidescrolloff
+    set sidescrolloff=5
+endif
+set display+=lastline
 
 " Color column 80 and everything past 120
 let &colorcolumn="80,".join(range(120,999),",")
 
 
+
 " -- Backups ------------------------------------------------------"
 set noswapfile
 set nobackup
+
 
 
 " -- Tabs ---------------------------------------------------------"
@@ -58,6 +81,8 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 set autoindent
+set smarttab
+
 
 
 " -- Search -------------------------------------------------------"
@@ -99,6 +124,14 @@ nmap <leader>ss :set spell!<cr>
 " Open Journal
 nmap <leader>jj :call Journal()<cr>
 
+" Bubble line up and down
+nmap <C-Up> ddkP
+nmap <C-Down> ddp
+
+" Bubble multiple lines
+vmap <C-Up> xkP`[V``]
+vmap <C-Down> xp`[V`]
+
 
 
 " -- Laravel Specific ---------------------------------------------"
@@ -106,12 +139,13 @@ nmap <Leader>lr :e app/Http/routes.php<cr>
 nmap <Leader>lc :e app/Http/Controllers/<cr>
 nmap <Leader>lm :e app/<cr>
 nmap <Leader>lv :e resources/views/<cr>
-nmap <Leader>la :!php artisan 
+nmap <Leader>la :!php artisan
 nmap <Leader>lam :!php artisan make:
 " nmap <Leader>lar :new | r !php artisan route:list
 nmap <Leader><leader>lc :CtrlP<cr>app/Http/Controllers/
 nmap <Leader><leader>lm :CtrlP<cr>app/
 nmap <Leader><leader>lv :CtrlP<cr>resources/views/
+
 
 
 " -- Auto-Commands ------------------------------------------------"
@@ -144,7 +178,7 @@ function! Journal()
     let filepath = expand("~") . "/journal/" . strftime("%Y") . "/" . strftime("%m")
     let filename = strftime("%Y%m%d") . ".md"
     let fullpath = filepath . "/" . filename
-    
+
     " If the file path does not exist, then create it
     if !isdirectory(filepath)
         call mkdir(filepath, "p")
