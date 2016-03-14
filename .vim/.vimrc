@@ -16,13 +16,15 @@ set nowrap                                  " Do not autowrap long lines
 set hidden                                  " Allow reuse of the same window
 set wildmenu                                " Turn on improved command-line completion
 set wildignore=.git,*.swp,*.jpg,*.png,*.gif
-set wildmode=longest,list
+set wildmode=longest:full,full
 set confirm                                 " Istead of failing a command, ask to save
 set mouse=a                                 " Allow the use of the mouse in all modes
 set spelllang=en_us                         " Use the English spellings
 set lazyredraw                              " Lazyredraw attempts to solve Vim lag by reducing the amount of processing required. When enabled, any action that is not typed will not cause the screen to redraw.
 set ttyfast                                 "
 set autoread                                " Auto reload a file if it has changed
+set autowriteall                            " Auto write the file when switching buffers
+set complete=.,w,b,u,t,i                    " Set our desirec autocompleteion matching
 
 
 

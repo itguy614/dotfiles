@@ -23,6 +23,8 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'Shougo/unite-outline'
     Plugin 'tsukkee/unite-tag'
     Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
+    Plugin 'ervandew/supertab'                      " SuperTab
+    Plugin 'stephpy/vim-php-cs-fixer'               " Auto format PSR-2
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
@@ -102,7 +104,7 @@ let g:indent_guides_color_change_percent = 3
 " Use this option to customize the size of the indent guide.
 let g:indent_guides_guide_size = 1
 
-" Use this option to control whether the plugin is enabled on Vim startup. 
+" Use this option to control whether the plugin is enabled on Vim startup.
 let g:indent_guides_enable_on_vim_startup = 1
 
 "Use this option to control which indent level to start showing guides from.
@@ -111,6 +113,15 @@ let g:indent_guides_start_level=2
 "Use this option to control whether the plugin considers spaces as indention.
 let g:indent_guides_space_guides=0
 
+
+"/
+"/ vim-php-cs-fixer
+"/
+let g:php_cs_fixer_level = "psr2"               " Use PSR2 formatting
+let g:php_cs_fixer_fixers_list = "-psr0"        " Disable PSR0
+let g:php_cs_fixer_enable_default_mapping = 0   " Disable default key maps
+
+nmap <leader>pf :call PhpCsFixerFixFile()<cr>
 
 "/
 "/ vim-php-namespace
