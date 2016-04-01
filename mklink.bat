@@ -20,3 +20,6 @@ mklink %userprofile%\.vimrc %userprofile%\dotfiles\.vim\.vimrc
 
 del ..\.vim
 mklink /d %userprofile%\.vim %userprofile%\dotfiles\.vim
+
+del ..\vimfiles
+mklink /d %userprofile%\vimfiles %userprofile%\dotfiles\.vim

@@ -42,15 +42,17 @@ set printoptions=header:0,duplex:long,paper:letter
 " -- Visuals ------------------------------------------------------"
 set background=dark                         " Use a dark background
 set t_Co=256                                " Support 256 colors in the terminal
-colorscheme hybrid_material   				" Color theme
-set guifont=Fira_Code:h14          		    " Use my coding font
+colorscheme atom-dark-256    				" Color theme
+set background=dark
+set guifont=Fira_Code:h12          		    " Use my coding font
 " set linespace=12						    " Macvim specific line-height
 
 set guioptions-=l						    " Disable left scroll bar
 set guioptions-=L						    " Disable left scroll in a split
 set guioptions-=r						    " Disable right scroll bar
 set guioptions-=R						    " Disable right scroll bar in a split
-
+set guioptions-=m                           " Remove menu bar
+set guioptions-=T                           " Remove toolbar
 set guioptions-=e						    " Use non-gui tabs
 set cursorline
 set nocursorcolumn
@@ -69,6 +71,14 @@ set display+=lastline
 " Color column 80 and everything past 120
 let &colorcolumn="80,".join(range(120,999),",")
 
+if has("gui_running")
+    set lines=43 columns=120
+else
+    if exists("+lines")
+    endif
+    if exists("+columns")
+    endif
+endif
 
 
 " -- Backups ------------------------------------------------------"
@@ -133,6 +143,14 @@ nmap <C-Down> ddp
 " Bubble multiple lines
 vmap <C-Up> xkP`[V``]
 vmap <C-Down> xp`[V`]
+
+" Indent lines in visual mode using tab
+vmap <tab> >gv
+vmap <tab> <gv
+
+" Indent lines in normal mode
+nmap <tab> I<tab><esc>
+nmap <s-tab> ^i<bs><esc>
 
 
 
