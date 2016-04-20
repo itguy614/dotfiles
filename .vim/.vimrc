@@ -180,7 +180,7 @@ augroup END
 " Set syntac highlighting for certain files
 augroup autofiletype
     autocmd!
-    autocmd BufRead,BufNewFile *.md set filetype=markdown|set wrap|set linebreak|set nolist|set textwidth=0|set wrapmargin=0
+    autocmd BufRead,BufNewFile *.md set filetype=markdown|set wrap|set linebreak|set nolist|set textwidth=0|set wrapmargin=0|let &colorcolumn=0
 augroup END
 
 
