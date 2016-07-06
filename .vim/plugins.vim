@@ -17,14 +17,16 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'arnaud-lb/vim-php-namespace'            " Easy way to insert namespace and use statements
     Plugin 'craigemery/vim-autotag'                 " Automatically regenerate tag file
     Plugin 'Shougo/vimproc.vim'
-    Plugin 'Shougo/unite.vim'
-    Plugin 'rstacruz/vim-fastunite'
-    Plugin 'Shougo/neomru.vim'
-    Plugin 'Shougo/unite-outline'
-    Plugin 'tsukkee/unite-tag'
+    " Plugin 'Shougo/unite.vim'
+    " Plugin 'rstacruz/vim-fastunite'
+    " Plugin 'Shougo/neomru.vim'
+    " Plugin 'Shougo/unite-outline'
+    " Plugin 'tsukkee/unite-tag'
     Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
     Plugin 'ervandew/supertab'                      " SuperTab
     Plugin 'stephpy/vim-php-cs-fixer'               " Auto format PSR-2
+    Plugin 'vim-airline/vim-airline'                " Status line
+    Plugin 'vim-airline/vim-airline-themes'         " Airline themes
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
@@ -85,15 +87,6 @@ nmap <D-e> :CtrlPMRUFiles<cr>
 
 
 "/
-"/ Unite
-"/
-let g:unite_source_history_yank_enable = 1
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-let g:unite_source_file_async_command = 'ag --follow --nocolor --nogroup --skip-vcs-ignores --hidden -g ""'
-nmap <leader>t :Unite -no-split -buffer-name=Tags -start-insert tag<cr>
-nmap <leader>o :Unite -no-split -buffer-name=Files -start-insert file_rec<cr>
-
-"/
 "/ Indent Guides
 "/
 
@@ -122,6 +115,13 @@ let g:php_cs_fixer_fixers_list = "-psr0"        " Disable PSR0
 let g:php_cs_fixer_enable_default_mapping = 0   " Disable default key maps
 
 nmap <leader>pf :call PhpCsFixerFixFile()<cr>
+
+
+"/
+"/ Airline
+"/
+let g:airline_theme = "hybrid"
+
 
 "/
 "/ vim-php-namespace
