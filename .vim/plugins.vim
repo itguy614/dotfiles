@@ -121,6 +121,7 @@ nmap <leader>pf :call PhpCsFixerFixFile()<cr>
 "/ Airline
 "/
 let g:airline_theme = "hybrid"
+let g:airline#extensions#tabline#enabled = 1
 
 
 "/
