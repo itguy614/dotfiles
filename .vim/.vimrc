@@ -168,6 +168,8 @@ nmap <Leader><leader>lv :CtrlP<cr>resources/views/
 
 
 
+nmap <Leader>d i##X## <esc>
+
 " -- Auto-Commands ------------------------------------------------"
 
 " Automatically source tese files on save.
