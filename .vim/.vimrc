@@ -13,6 +13,8 @@ set ch=2                                    " Make the command line two lines
 set noerrorbells visualbell t_vb=           " No more bells
 set backspace=2                             " Allow backspacing over indent, eol, and the start of an indent
 set nowrap                                  " Do not autowrap long lines
+set sidescroll=5                            " Scoll left and right by 5 chars at a time
+set listchars+=precedes:<,extends:>
 set hidden                                  " Allow reuse of the same window
 set wildmenu                                " Turn on improved command-line completion
 set wildignore=.git,*.swp,*.jpg,*.png,*.gif
@@ -42,7 +44,8 @@ set printoptions=header:0,duplex:long,paper:letter
 " -- Visuals ------------------------------------------------------"
 set background=dark                         " Use a dark background
 set t_Co=256                                " Support 256 colors in the terminal
-colorscheme hybrid_material    				" Color theme
+"colorscheme hybrid_material    				" Color theme
+colorscheme nova
 set background=dark
 set guifont=Fira_Code:h12          		    " Use my coding font
 " set linespace=12						    " Macvim specific line-height
