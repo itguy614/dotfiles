@@ -28,6 +28,11 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'vim-airline/vim-airline'                " Status line
     Plugin 'vim-airline/vim-airline-themes'         " Airline themes
 
+    Plugin 'trevordmiller/nova-vim'
+    Plugin 'pangloss/vim-javascript'
+    Plugin 'othree/html5.vim'
+    Plugin 'hail2u/vim-css3-syntax'
+
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
 
@@ -121,6 +126,7 @@ nmap <leader>pf :call PhpCsFixerFixFile()<cr>
 "/ Airline
 "/
 let g:airline_theme = "hybrid"
+let g:airline#extensions#tabline#enabled = 1
 
 
 "/

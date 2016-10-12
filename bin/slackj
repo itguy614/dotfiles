@@ -1,0 +1,18 @@
+#!/bin/sh
+
+JOURNAL_DIR="${HOME}/journal"
+
+YEAR_DIR=$(date +%Y)
+MONTH_DIR=$(date +%m)
+FILE_PATH="${JOURNAL_DIR}/${YEAR_DIR}/${MONTH_DIR}"
+FILE_NAME=$(date +%Y%m%d)
+FULL_FILE="${FILE_PATH}/${FILE_NAME}.md"
+
+CONTENT=$(cat $FULL_FILE | python -c "import sys; print sys.stdin.read().replace('\n', r'\n').replace('\"', r'\"')")
+
+JSON="{\"channel\": \"0930\", \"text\": \"$CONTENT\", \"username\": \"Kurt Wolf\", \"icon_emoji\": \"ghost\"}"
+
+curl -X POST \
+    --data-urlencode "payload=$JSON" \
+    `cat ${HOME}/slack.webhook`
+

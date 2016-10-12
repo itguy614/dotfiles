@@ -61,7 +61,7 @@ alias gst='git stach'
 alias gt='git tag -l'
 alias gtd='git tag -d'
 alias gx='gitx --all'
-
+alias nah='git reset --hard; git clean -df;'
 
 function gta() {
   [ -z "$1" ] && echo 'Invalid tag name!' && return
