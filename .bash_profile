@@ -23,6 +23,10 @@ if [ "$(uname )" != "Darwin" ]; then
 	eval `dircolors ~/dotfiles/dircolors/dircolors.ansi-dark`
 fi
 
+if [ -f ~/.iterm2_shell_integration.bash ]; then
+    source ~/.iterm2_shell_integration.bash
+fi
+
 # Set to some value in order to disable tmux
 tmux=''
 
@@ -48,3 +52,5 @@ case `uname` in
 		fi
                 ;;
 esac
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"

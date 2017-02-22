@@ -125,9 +125,9 @@ nmap <leader>pf :call PhpCsFixerFixFile()<cr>
 "/
 "/ Airline
 "/
-let g:airline_theme = "solarized"
+let g:airline_theme = "hybrid"
 let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
 
 "/
 "/ vim-php-namespace
