@@ -257,3 +257,7 @@ alias ungz='tar -xvzf'
 
 # Alias for dtach to save session
 alias wm="dtach -A /tmp/dvtm -r winch dvtm"
+
+alias weather='curl -s wttr.in | sed -n "1,7p"'
+alias weathertoday="curl -s wttr.in | sed -n '1,17p'" #weather today
+alias weathertomorrow="curl -s wttr.in | sed -n '18,27p'" #weather tomorrow

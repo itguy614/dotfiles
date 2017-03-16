@@ -17,11 +17,6 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'arnaud-lb/vim-php-namespace'            " Easy way to insert namespace and use statements
     Plugin 'craigemery/vim-autotag'                 " Automatically regenerate tag file
     Plugin 'Shougo/vimproc.vim'
-    " Plugin 'Shougo/unite.vim'
-    " Plugin 'rstacruz/vim-fastunite'
-    " Plugin 'Shougo/neomru.vim'
-    " Plugin 'Shougo/unite-outline'
-    " Plugin 'tsukkee/unite-tag'
     Plugin 'editorconfig/editorconfig-vim'          " Use the excellent editor config plugin
     Plugin 'ervandew/supertab'                      " SuperTab
     Plugin 'stephpy/vim-php-cs-fixer'               " Auto format PSR-2
@@ -32,6 +27,8 @@ call vundle#begin()						            " Begin plugin definitions
     Plugin 'pangloss/vim-javascript'
     Plugin 'othree/html5.vim'
     Plugin 'hail2u/vim-css3-syntax'
+
+    Plugin 'reedes/vim-pencil'
 
 call vundle#end()						            " End plugin definitions
 filetype plugin indent on
@@ -128,6 +125,7 @@ nmap <leader>pf :call PhpCsFixerFixFile()<cr>
 let g:airline_theme = "hybrid"
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 0
+
 
 "/
 "/ vim-php-namespace
