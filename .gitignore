@@ -1,6 +1,6 @@
 .vim/.netrwhist
 .vim/bundle/*
-
+.vim/bundle/Vundle.vim
 .weechat/*.log
 .weechat/logs/*
 .weechat/irc.conf
