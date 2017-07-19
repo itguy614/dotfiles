@@ -45,7 +45,7 @@ set printoptions=header:0,duplex:long,paper:letter
 set background=dark                         " Use a light background
 set t_Co=256                                " Support 256 colors in the terminal
 "colorscheme solarized        				" Color theme
-colorscheme hybrid_material
+colorscheme toothpaste
 set guifont=Fira_Code:h12          		    " Use my coding font
 " set linespace=12						    " Macvim specific line-height
 
@@ -56,7 +56,7 @@ set guioptions-=R						    " Disable right scroll bar in a split
 set guioptions-=m                           " Remove menu bar
 set guioptions-=T                           " Remove toolbar
 set guioptions-=e						    " Use non-gui tabs
-set cursorline
+set nocursorline
 set nocursorcolumn
 set ruler                                   " Display col/col on statusline
 
@@ -71,7 +71,7 @@ endif
 set display+=lastline
 
 " Color column 80 and everything past 120
-let &colorcolumn="80,".join(range(120,999),",")
+" let &colorcolumn="80,".join(range(120,999),",")
 
 if has("gui_running")
     set lines=43 columns=120

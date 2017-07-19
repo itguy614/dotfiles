@@ -27,6 +27,7 @@ alias oo="open ."
 alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 alias mvim="/Applications/MacVim.app/Contents/MacOS/Vim -g"
 alias tinker="php artisan tinker"
+alias art="php artisan"
 
 # GIT shortcuts
 alias ga='git add '
@@ -63,6 +64,12 @@ alias gt='git tag -l'
 alias gtd='git tag -d'
 alias gx='gitx --all'
 alias nah='git reset --hard; git clean -df;'
+
+function rmbranch() {
+  [ -z "$1" ] && echo 'Brnach name required!' && return
+  git push origin --delete $1
+  git branch delete -D $1
+}
 
 function gta() {
   [ -z "$1" ] && echo 'Invalid tag name!' && return
