@@ -26,9 +26,25 @@ alias o="open"
 alias oo="open ."
 alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 alias mvim="/Applications/MacVim.app/Contents/MacOS/Vim -g"
+alias copyssh="pbcopy < $HOME/.ssh/id_rsa.pub"
+alias shrug="echo '¯\_(ツ)_/¯' | pbcopy"
+alias fight="echo '(ง'̀-'́)ง' | pbcopy"
+alias editalias="vim ~/dotfiles/.aliases; source ~/dotfiles/.aliases"
+
+# PHP/Laravel Shortcuts
+alias tinker="php artisan tinker"
 alias tink="php artisan tinker"
 alias art="php artisan"
+alias migrate="php artisan migrate"
+alias fresh="php artisan migrate:refresh --seed"
+alias cclear="php artisan cache:clear"
 alias worker="redis-cli flushall; php artisan queue:work"
+
+alias c="composer"
+alias cr="composer require"
+alias cda="composer dumpautoload"
+alias cu="composer update"
+>>>>>>> 3b38b3270df1ba2f2590e10e469206601aeb582b
 
 # GIT shortcuts
 alias ga='git add '
@@ -65,6 +81,7 @@ alias gt='git tag -l'
 alias gtd='git tag -d'
 alias gx='gitx --all'
 alias nah='git reset --hard; git clean -df;'
+alias wip="git add . && git commit -m 'wip'"
 
 function rmbranch() {
   [ -z "$1" ] && echo 'Brnach name required!' && return
