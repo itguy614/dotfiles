@@ -26,8 +26,9 @@ alias o="open"
 alias oo="open ."
 alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 alias mvim="/Applications/MacVim.app/Contents/MacOS/Vim -g"
-alias tinker="php artisan tinker"
+alias tink="php artisan tinker"
 alias art="php artisan"
+alias worker="redis-cli flushall; php artisan queue:work"
 
 # GIT shortcuts
 alias ga='git add '
