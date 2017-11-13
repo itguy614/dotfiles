@@ -44,7 +44,6 @@ alias c="composer"
 alias cr="composer require"
 alias cda="composer dumpautoload"
 alias cu="composer update"
->>>>>>> 3b38b3270df1ba2f2590e10e469206601aeb582b
 
 # GIT shortcuts
 alias ga='git add '
