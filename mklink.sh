@@ -17,3 +17,4 @@ ln -s ~/dotfiles/.vim/.vimrc ~/.vimrc
 ln -s ~/dotfiles/.weechat ~/.weechat
 ln -s ~/dotfiles/.zshrc ~/.zshrc
 ln -s ~/dotfiles/bin ~/bin
+ln -s ~/dotfiles/.php_cs ~/.vscode/.php_cs
