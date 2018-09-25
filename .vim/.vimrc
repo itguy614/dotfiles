@@ -44,8 +44,7 @@ set printoptions=header:0,duplex:long,paper:letter
 " -- Visuals ------------------------------------------------------"
 set background=dark                         " Use a light background
 set t_Co=256                                " Support 256 colors in the terminal
-"colorscheme solarized        				" Color theme
-colorscheme atom-dark-256
+colorscheme azure
 set guifont=Fira_Code:h12          		    " Use my coding font
 " set linespace=12						    " Macvim specific line-height
 
