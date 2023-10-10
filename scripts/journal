@@ -1,0 +1,16 @@
+#!/bin/sh
+
+JOURNAL_DIR="${HOME}/journal"
+
+YEAR_DIR=$(date +%Y)
+MONTH_DIR=$(date +%m)
+FILE_PATH="${JOURNAL_DIR}/${YEAR_DIR}/${MONTH_DIR}"
+FILE_NAME=$(date +%Y%m%d)
+FULL_FILE="${FILE_PATH}/${FILE_NAME}.md"
+
+mkdir -p "${FILE_PATH}"
+
+# If the file doesn't exist, then create it but start from a template
+touch "${FULL_FILE}"
+
+nvim "${FULL_FILE}"

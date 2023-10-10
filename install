@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+# Calculate the dotfile location
+DOTFILES=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Create any missing directories
+mkdir -p $HOME/.config
+mkdir -p $HOME/.local/bin
+mkdir -p $HOME/.vim
+
+# Kitty Configuration (Terminal)
+rm -rf $HOME/.config/kitty
+ln -s $DOTFILES/kitty $HOME/.config/kitty
+
+# Hyper Configuration (Terminal)
+rm -rf $HOME/.hyper.js
+ln -s $DOTFILES/hyper/hyper.js $HOME/.hyper.js
+
+# Tmux Configuration
+rm -rf $HOME/.tmux.conf
+ln -s $DOTFILES/tmux/tmux.conf $HOME/.tmux.conf
+
+rm -rf $HOME/.local/bin/t
+ln -s $DOTFILES/scripts/t $HOME/.local/bin/t
+
+# GIT Configuration
+rm -rf $HOME/.gitignore
+ln -s $DOTFILES/git/gitignore $HOME/.gitignore
+
+rm -rf $HOME/.gitconfig
+ln -s $DOTFILES/git/gitconfig $HOME/.gitconfig
+
+rm -Rf $HOME/.git_template
+ln -s $DOTFILES/git/git_template $HOME/.git_template
+
+rm -rf $HOME/.gitconfig.os
+case "`uname -s`" in
+	Linux*)	os=linux;;
+	Darwin*) os=macos;;
+	CYGWIN*) os=windows;;
+	MINGW*) os=windows;;
+	MSYS_NT*) os=macos;;
+	*) os=default;;
+esac
+ln -s $DOTFILES/git/gitconfig.$os $HOME/.gitconfig.os
+
+# ctags Configuration
+rm -rf $HOME/.ctags
+ln -s $DOTFILES/ctags/ctags $HOME/.ctags
+
+# Editorconfig Configuration
+rm -rf $HOME/.editorconfig
+ln -s $DOTFILES/editorconfig/editorconfig $HOME/.editorconfig
+
+# PHP Configuration
+rm -rf $HOME/.php_cs
+ln -s $DOTFILES/php/php_cs $HOME/.php_cs
+
+# VIM Configuration
+rm -rf $HOME/.vimrc
+ln -s $DOTFILES/vim/vimrc $HOME/.vimrc
+
+rm -rf $HOME/.vim/plugins.vim
+ln -s $DOTFILES/vim/plugins.vim $HOME/.vim/plugins.vim
+
+if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
+	git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
+fi
+
+rm -Rf $HOME/.config/nvim
+ln -s $DOTFILES/nvim $HOME/.config/nvim
+
+# Zsh Configuration
+rm -rf $HOME/.zshrc
+ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
+
+rm -rf $HOME/.paths
+ln -s $DOTFILES/zsh/paths $HOME/.paths
+
+rm -rf $HOME/.aliases
+ln -s $DOTFILES/zsh/aliases $HOME/.aliases
+
+# Oh My Zsh
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+
+# Journal
+rm -rf $HOME/.local/bin/journal
+ln -s $DOTFILES/scripts/journal $HOME/.local/bin/journal
+
+rm -rf $HOME/.local/bin/j
+ln -s $HOME/.local/bin/journal $HOME/.local/bin/j

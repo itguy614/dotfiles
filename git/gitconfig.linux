@@ -1,0 +1,10 @@
+[credential]
+	helper = osxkeychain
+[core]
+	excludesfile = ~/.gitignore
+    editor = vim
+[commit]
+	gpgsign = true
+	template = ~/.stCommitMsg
+[gpg]
+	program = /usr/bin/gpg

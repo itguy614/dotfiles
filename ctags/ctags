@@ -1,0 +1,21 @@
+--exclude=.git
+--exclude=node_modules
+--exclude=storage/*
+--exclude=compiled.php
+--exclude=log
+--exclude=.build
+--exclude=.project
+--exclude=.idea/*
+--exclude=.settings/*
+--regex-php=/^[ \t]*trait[ \t]+([a-z0_9_]+)/\1/t,traits/i
+--exclude=*.js
+--exclude=*.css
+--exclude=*.sass
+--exclude=*.scss
+--exclude=bootstrap/cache/compiled.php
+--exclude=vendor/*
+--exclude=bower_components
+--sort=yes
+--recurse
+--tag-relative
+--PHP-kinds=+cf

@@ -1,0 +1,180 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to your oh-my-zsh installation.
+export ZSH="`echo $HOME`/.oh-my-zsh"
+
+ZSH_THEME="gallifrey"
+HYPHEN_INSENSITIVE="true"
+COMPLETION_WAITING_DOTS="true"
+HIST_STAMPS="yyyy-mm-dd"
+VI_MODE_SET_CURSOR="true"
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE="true"
+
+export EDITOR=nvim
+
+plugins=(
+    colored-man-pages
+    colorize
+    common-aliases
+    composer
+    cp
+    extract
+    git
+    gitignore
+    macos
+    npm
+    pip
+    python
+    brew
+    extract
+    sudo
+    tmux
+    vi-mode
+    vscode
+    web-search
+    zsh-autosuggestions
+ aws)
+
+source $ZSH/oh-my-zsh.sh
+
+export KEYTIMEOUT=15
+
+typeset -U path cdpath fpath
+path=(
+	$HOME/.local/bin
+	./bin
+	./vendor/bin
+	/usr/local/bin
+	/usr/local/sbin
+	$HOME/.composer/vendor/bin
+	$HOME/bin
+	./node_modules/.bin
+    $path
+)
+
+# Easier directory navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias .2="cd ../.."
+alias .3="cd ../../.."
+alias .4="cd ../../../.."
+alias ~="cd ~"
+
+# Shortcuts
+alias p="cd $HOME/code"
+alias v="nvim"
+alias vim="nvim"
+
+# PHP/Laravel Shortcuts
+alias tinker="php artisan tinker"
+alias tink="php artisan tinker"
+
+alias art="php artisan"
+
+alias migrate="php artisan migrate"
+alias mfs="php artisan migrate:fresh --seed"
+
+alias mc="php artisan make:controller"
+alias mrc="php artisan mae:controller --resource"
+alias mm="php artisan make:migration"
+alias mmm="php artisan make:migration -m"
+
+# Tail all Laravel Logs and filter out the stack traces:
+alias viewlog='tail -f -n 450 storage/logs/laravel*.log | grep -i -E "^\[\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}\]|Next [\w\W]+?\:" --color'
+
+# Remove all logs
+alias rmlogs="rm storage/logs/laravel-*.log"
+
+alias c="composer"
+alias cr="composer require"
+alias cda="composer dumpautoload"
+alias cu="composer update"
+
+alias mylocal="mysql -u root -p -h localhost --protocol tcp"
+
+# Espressif environment
+alias goesp=". $HOME/esp/esp-idf/export.sh"
+alias esp="idf.py"
+alias ef="idf.py"
+
+# GIT Shortcuts
+alias g="git"
+alias ga="git add "
+alias gaa="git add -A"
+alias gamd="git commit --amend --no-edit"
+alias gb="git branch "
+alias gbc="git checkout -b"
+alias gbr="git branch"
+alias gbrc="git rev-parse --abbrev-ref HEAD"
+alias gc="git commit"
+alias gcl="git clone"
+alias gcm="git commit -m"
+alias gd="git diff"
+alias gds="git diff --staged"
+alias gg="git pull"
+alias gk="gitk --all&"
+alias gl="git log"
+alias glp="git log -p"
+alias gls="git log --oneline"
+alias glv="git log --oneline --graph"
+alias go="git checkout "
+alias gp="git push"
+alias grh="git reset HEAD"
+alias gs="git status "
+alias gsa="git stash apply"
+alias gsd="git stash drop"
+alias gsh="git show"
+alias gsl="git stash list"
+alias gsp="git stash pop"
+alias gss="git stash save"
+alias gssh="git stash show -p"
+alias gst="git stach"
+alias gt="git tag -l"
+alias gtd="git tag -d"
+alias gx="gitx --all"
+alias nah="git reset --hard; git clean -df;"
+alias wip="git add . && git commit -m "wip""
+alias got="git "
+alias get="git "
+alias gtower="gittower git rev-parse --show-toplevel"
+
+# Show mount command output pretty and human readable
+alias lsmount="mount |column -t"
+
+# Enable aliases to be sudo"ed
+alias sudo="sudo "
+alias reboot="sudo reboot"
+
+# find top 5 big files
+alias findbig="find . -type f -exec ls -s {} \; | sort -n -r | head -5"
+
+# lists size of folders in ./
+alias foldersize="du -d 1|sort -n|cut -f2|tr '\n' '\0'|xargs -0 du -sh 2>/dev/null"
+
+# human df
+alias df="df -h"
+
+function db {
+    if [ "$1" = "refresh" ]; then
+        mysql -uroot -p -e "drop database $2; create database $2; use $2; source $3"
+    elif [ "$1" = "create" ]; then
+        mysql -uroot -p -e "create database $2"
+    elif [ "$1" = "drop" ]; then
+        mysql -uroot -p -e "drop database $2"
+    fi
+}
+
+# Homebrew
+alias brewr="arch -x86_64 /usr/local/bin/brew $@"
+alias leg="arch -x86_64 $@"
+alias arm="arch -x86_64 $@"
+
+# Print Source Code
+alias printcode="a2ps -1 --line-numbers=1 -g -E"
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
