@@ -15,6 +15,6 @@ initial_window_height 1200
 enable_audio_bell no
 
 # BEGIN_KITTY_THEME
-# Catppuccin-Frappe
+# One Dark
 include current-theme.conf
 # END_KITTY_THEME
