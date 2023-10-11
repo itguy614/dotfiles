@@ -58,5 +58,8 @@ require("lazy").setup({
     { 'tpope/vim-fugitive' },
 
     -- Display buffers as tabs
-    { import = "user.plugins.bufferline" }
+    { import = "user.plugins.bufferline" },
+
+    -- Better integrated terminal
+    { import = "user.plugins.floaterm" }
 })
