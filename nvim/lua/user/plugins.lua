@@ -61,5 +61,8 @@ require("lazy").setup({
     { import = "user.plugins.bufferline" },
 
     -- Better integrated terminal
-    { import = "user.plugins.floaterm" }
+    { import = "user.plugins.floaterm" },
+
+    -- Improved syntax highlighting
+    { import = 'user.plugins.treesitter' }
 })
