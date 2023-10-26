@@ -64,5 +64,11 @@ require("lazy").setup({
     { import = "user.plugins.floaterm" },
 
     -- Improved syntax highlighting
-    { import = 'user.plugins.treesitter' }
+    { import = 'user.plugins.treesitter' },
+
+    -- LSP Server
+    { import = 'user.plugins.lspconfig' },
+
+    -- Completion
+    { import = 'user.plugins.cmp' }
 })
