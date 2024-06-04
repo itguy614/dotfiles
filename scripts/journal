@@ -7,10 +7,28 @@ MONTH_DIR=$(date +%m)
 FILE_PATH="${JOURNAL_DIR}/${YEAR_DIR}/${MONTH_DIR}"
 FILE_NAME=$(date +%Y%m%d)
 FULL_FILE="${FILE_PATH}/${FILE_NAME}.md"
+TEMPLATE="${JOURNAL_DIR}/template.md"
+
+YESTERDAY_PATH="${JOURNAL_DIR}/$(date -d 'yesterday' +%Y)/$(date -d 'yestterday' +%m)"
+YESTERDAY_FILE="${YESTERDAY_PATH}/$(date -d 'yesterday' +%Y%m%d).md"
 
 mkdir -p "${FILE_PATH}"
 
-# If the file doesn't exist, then create it but start from a template
-touch "${FULL_FILE}"
+if [ -f "${FULL_FILE}" ]; then
+    echo "Opening Journal: ${FULL_FILE}"
+else
+    echo "Creating Journal: ${FULL_FILE}"
+    echo "# $(date +%Y-%m-%d)" > ${FULL_FILE}
+    echo " " >> ${FULL_FILE}
+
+    if [ -f "${YESTERDAY_FILE}" ]; then
+        cat ${YESTERDAY_FILE} | sed '/\[x\]/I d' | sed '1,/\## Notes/!d' >> ${FULL_FILE}
+    else
+        # Yesterday doesn't exist, so start from the template if it exists
+        if [ -f "${TEMPLATE}" ]; then
+            cat ${TEMPLATE} >> ${FULL_FILE}
+        fi
+    fi
+fi
 
 nvim "${FULL_FILE}"

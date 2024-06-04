@@ -19,6 +19,7 @@ plugins=(
     common-aliases
     composer
     cp
+    direnv
     extract
     git
     gitignore
@@ -175,6 +176,9 @@ alias arm="arch -x86_64 $@"
 # Print Source Code
 alias printcode="a2ps -1 --line-numbers=1 -g -E"
 
+# GPG configuration
+export GPG_TTY=$(tty)
+
 # PyEnv
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
@@ -184,3 +188,17 @@ eval "$(pyenv init -)"
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# GitIgnore
+function gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;}
+
+_gitignoreio_get_command_list() {
+  curl -sL https://www.toptal.com/developers/gitignore/api/list | tr "," "\n"
+}
+
+_gitignoreio () {
+  compset -P '*,'
+  compadd -S '' `_gitignoreio_get_command_list`
+}
+
+compdef _gitignoreio gi

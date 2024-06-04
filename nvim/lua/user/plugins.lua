@@ -64,5 +64,11 @@ require("lazy").setup({
     { import = "user.plugins.floaterm" },
 
     -- Improved syntax highlighting
-    { import = 'user.plugins.treesitter' }
+    { import = 'user.plugins.treesitter' },
+
+    -- Auto line wrapping
+    { import = 'user.plugins.wrapping' },
+
+    -- GitHub Copilot
+    { import = 'user.plugins.copilot' },
 })

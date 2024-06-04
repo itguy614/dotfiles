@@ -4,6 +4,7 @@
 [user]
 	name = Kurt Wolf
 	email = kwolf@gohcl.com
+	signingkey = 8060A02E
 [push]
 	default = simple
 [alias]
