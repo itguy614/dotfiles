@@ -13,8 +13,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
     -- Colors
-    { import = 'user.plugins.tokyonight' },
-    
+    -- { import = 'user.plugins.tokyonight' },
+    { import = 'user.plugins.catppuccin' },
+
     -- Indent autodetection with editorconfig support
     { 'tpope/vim-sleuth' },
 
@@ -29,7 +30,7 @@ require("lazy").setup({
 
     -- Automatically create parent dirs when saving
     { 'jessarcher/vim-heritage' },
-    
+
     -- Automatically set the working directory to the project root
     { import = 'user.plugins.vim-router' },
 
@@ -54,8 +55,15 @@ require("lazy").setup({
     -- Display indentation lines
     { import = "user.plugins.indent-blankline" },
 
+    -- Barbecue (VX Code like winbar)
+    { import = "user.plugins.barbecue" },
+
+    -- Scrollbar
+    { import = "user.plugins.nvim-scrollbar" },
+
     -- GIT integration
     { 'tpope/vim-fugitive' },
+    { import = "user.plugins.gitsigns" },
 
     -- Display buffers as tabs
     { import = "user.plugins.bufferline" },

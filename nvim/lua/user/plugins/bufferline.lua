@@ -1,8 +1,9 @@
 return {
   'akinsho/bufferline.nvim',
   dependencies = 'kyazdani42/nvim-web-devicons',
+  after = "catppuccin",
   opts = {
-    options = {
+    -- options = {
       indicator = {
         icon = ' ',
       },
@@ -26,58 +27,64 @@ return {
           }
         end,
       },
-    },
-    highlights = {
-      fill = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      background = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      tab = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      tab_close = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      close_button = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-        fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
-      },
-      close_button_visible = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-        fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
-      },
-      close_button_selected = {
-        fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
-      },
-      buffer_visible = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      modified = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      modified_visible = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      duplicate = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      duplicate_visible = {
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      separator = {
-        fg = { attribute = 'bg', highlight = 'StatusLine' },
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-      separator_selected = {
-        fg = { attribute = 'bg', highlight = 'StatusLine' },
-        bg = { attribute = 'bg', highlight = 'Normal' }
-      },
-      separator_visible = {
-        fg = { attribute = 'bg', highlight = 'StatusLine' },
-        bg = { attribute = 'bg', highlight = 'StatusLine' },
-      },
-    },
-  }
+    -- },
+    -- highlights = {
+    --   fill = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   background = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   tab = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   tab_close = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   close_button = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --     fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
+    --   },
+    --   close_button_visible = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --     fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
+    --   },
+    --   close_button_selected = {
+    --     fg = { attribute = 'fg', highlight = 'StatusLineNonText' },
+    --   },
+    --   buffer_visible = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   modified = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   modified_visible = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   duplicate = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   duplicate_visible = {
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   separator = {
+    --     fg = { attribute = 'bg', highlight = 'StatusLine' },
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    --   separator_selected = {
+    --     fg = { attribute = 'bg', highlight = 'StatusLine' },
+    --     bg = { attribute = 'bg', highlight = 'Normal' }
+    --   },
+    --   separator_visible = {
+    --     fg = { attribute = 'bg', highlight = 'StatusLine' },
+    --     bg = { attribute = 'bg', highlight = 'StatusLine' },
+    --   },
+    -- },
+  },
+  config = function(plugin, opts)
+    require('bufferline').setup {
+      options = opts,
+      highlights = require("catppuccin.groups.integrations.bufferline").get(),
+    }
+  end,
 }

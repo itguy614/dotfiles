@@ -11,3 +11,4 @@ $HOME/.local/bin
 ~/bin
 ./node_modules/.bin
 /Applications/Sublime Text.app/Contents/SharedSupport/bin
+$HOME/.cargo/bin
