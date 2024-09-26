@@ -10,11 +10,16 @@ return {
   },
   opts = {
     ensure_installed = 'all',
+    auto_install = true,
     highlight = {
       enable = true,
     },
     indent = {
       enable = true,
+      disable = { "yaml" },
+    },
+    rainbow = {
+      enabled = true,
     },
     context_commentstring = {
       enable = true,

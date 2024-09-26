@@ -78,5 +78,11 @@ require("lazy").setup({
     { import = 'user.plugins.lspconfig' },
 
     -- Completion
-    { import = 'user.plugins.cmp' }
+    { import = 'user.plugins.cmp' },
+
+    -- Auto line wrapping
+    { import = 'user.plugins.wrapping' },
+
+    -- GitHub Copilot
+    { import = 'user.plugins.copilot' },
 })
