@@ -1,12 +1,12 @@
 [init]
     templatedir=~/.git_template
-	defaultBranch = master
+    defaultBranch = master
 [user]
-	name = Kurt Wolf
-	email = kwolf@gohcl.com
-	signingkey = 8060A02E
+    name = Kurt Wolf
+    email = kwolf@gohcl.com
+    signingkey = 8060A02E
 [push]
-	default = simple
+    default = simple
 [alias]
     br = branch
     ci = commit
@@ -26,7 +26,7 @@
     type = cat-file -t
     lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 [pull]
-	rebase = false
+    rebase = false
 [color "status"]
     added = green bold
     changed = blue bold

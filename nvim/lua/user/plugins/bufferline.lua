@@ -1,7 +1,7 @@
 return {
   'akinsho/bufferline.nvim',
   dependencies = 'kyazdani42/nvim-web-devicons',
-  after = "catppuccin",
+  after = "nord",
   opts = {
     -- options = {
       indicator = {
@@ -18,15 +18,15 @@ return {
           text_align = 'left',
         },
       },
-      separator_style = 'slant',
+    --   separator_style = 'slant',
       modified_icon = '',
-      custom_areas = {
-        left = function()
-          return {
-            { text = '    ', fg = '#8fff6d' },
-          }
-        end,
-      },
+    --   custom_areas = {
+    --     left = function()
+    --       return {
+    --         { text = '    ', fg = '#8fff6d' },
+    --       }
+    --     end,
+    --   },
     -- },
     -- highlights = {
     --   fill = {
@@ -84,7 +84,7 @@ return {
   config = function(plugin, opts)
     require('bufferline').setup {
       options = opts,
-      highlights = require("catppuccin.groups.integrations.bufferline").get(),
+      -- highlights = require("catppuccin.groups.integrations.bufferline").get(),
     }
   end,
 }

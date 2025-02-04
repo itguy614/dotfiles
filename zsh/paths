@@ -13,3 +13,4 @@ $HOME/node_modules/.bin
 /Applications/Sublime Text.app/Contents/SharedSupport/bin
 $HOME/.cargo/bin
 /opt/homebrew/opt/mysql-client/bin
+$HOME/Library/Application Support/Herd/bin/"
