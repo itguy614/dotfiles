@@ -1,0 +1,11 @@
+font-family = "RobotoMono Nerd Font Mono"
+font-size = 18
+adjust-cell-height = 50%
+adjust-cursor-height = 75%
+cursor-style = bar
+cursor-style-blink = true
+background-opacity = .90
+background-blur = true
+window-height = 43
+window-width = 132
+bold-is-bright = true

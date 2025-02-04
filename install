@@ -14,6 +14,10 @@ mkdir -p $HOME/.vim
 rm -rf $HOME/.config/kitty
 ln -s $DOTFILES/kitty $HOME/.config/kitty
 
+# Ghostty Configuration (Terminal)
+rm -rf $HOME/.config/ghostty
+ln -s $DOTFILES/ghostty $HOME/.config/ghostty
+
 # Hyper Configuration (Terminal)
 rm -rf $HOME/.hyper.js
 ln -s $DOTFILES/hyper/hyper.js $HOME/.hyper.js
