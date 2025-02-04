@@ -14,7 +14,8 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     -- Colors
     -- { import = 'user.plugins.tokyonight' },
-    { import = 'user.plugins.catppuccin' },
+    -- { import = 'user.plugins.catppuccin' },
+    { import = 'user.plugins.nord' },
 
     -- Indent autodetection with editorconfig support
     { 'tpope/vim-sleuth' },
