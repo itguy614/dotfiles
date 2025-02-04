@@ -205,3 +205,6 @@ _gitignoreio () {
 }
 
 compdef _gitignoreio gi
+
+# GnuPG
+export GPGKEY=8060A02E
