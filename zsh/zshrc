@@ -148,7 +148,7 @@ alias gtower="gittower git rev-parse --show-toplevel"
 # Show mount command output pretty and human readable
 alias lsmount="mount |column -t"
 
-# Enable aliases to be sudo"ed
+# Enable aliases to be sudo'ed
 alias sudo="sudo "
 alias reboot="sudo reboot"
 
@@ -206,14 +206,8 @@ _gitignoreio () {
 
 compdef _gitignoreio gi
 
-
-# Herd injected PHP 8.2 configuration.
 export HERD_PHP_82_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/82/"
-
-
-# Herd injected PHP binary.
-export PATH="/Users/kwolf/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP 8.1 configuration.
 export HERD_PHP_81_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/81/"
+
+# GnuPG
+export GPGKEY=8060A02E
