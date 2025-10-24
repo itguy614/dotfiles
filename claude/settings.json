@@ -144,7 +144,7 @@
   "autoAcceptPermissions": false,
   "statusLine": {
     "type": "command",
-    "command": "/Users/kwolf/code/itguy614/dotfiles/claude/statusline.sh",
+    "command": "$HOME/code/itguy614/dotfiles/claude/statusline.sh",
     "padding": 0
   },
   "projectName": "",
