@@ -1,12 +1,10 @@
 return {
-  'neovim/nvim-lspconfig',
+  'williamboman/mason.nvim',
   event = 'VeryLazy',
   dependencies = {
-    'williamboman/mason.nvim',
-    'williamboman/mason-lspconfig.nvim',
     'b0o/schemastore.nvim',
-    { 'jose-elias-alvarez/null-ls.nvim', dependencies = 'nvim-lua/plenary.nvim' },
-    'jayp0521/mason-null-ls.nvim',
+    { 'nvimtools/none-ls.nvim', dependencies = 'nvim-lua/plenary.nvim' },
+    'jay-babu/mason-null-ls.nvim',
   },
   config = function()
     -- Setup Mason to automatically install LSP servers
@@ -15,15 +13,16 @@ return {
         height = 0.8,
       },
     })
-    require('mason-lspconfig').setup({ automatic_installation = true })
 
     local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
     -- CLang
-    require('lspconfig').clangd.setup({ capabilities = capabilities })
+    vim.lsp.config.clangd = {
+      capabilities = capabilities,
+    }
 
     -- PHP
-    require('lspconfig').intelephense.setup({
+    vim.lsp.config.intelephense = {
       commands = {
         IntelephenseIndex = {
           function()
@@ -38,10 +37,10 @@ return {
         --   vim.lsp.buf.inlay_hint(bufnr, true)
         -- end
       end,
-      capabilities = capabilities
-    })
+      capabilities = capabilities,
+    }
 
-    require('lspconfig').phpactor.setup({
+    vim.lsp.config.phpactor = {
       capabilities = capabilities,
       on_attach = function(client, bufnr)
         client.server_capabilities.completionProvider = false
@@ -65,11 +64,11 @@ return {
       },
       handlers = {
         ['textDocument/publishDiagnostics'] = function() end
-      }
-    })
+      },
+    }
 
     -- Vue, JavaScript, TypeScript
-    require('lspconfig').volar.setup({
+    vim.lsp.config.volar = {
       on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
@@ -81,39 +80,62 @@ return {
       -- Enable "Take Over Mode" where volar will provide all JS/TS LSP services
       -- This drastically improves the responsiveness of diagnostic updates on change
       filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-    })
+    }
 
     -- Tailwind CSS
-    require('lspconfig').tailwindcss.setup({ capabilities = capabilities })
+    vim.lsp.config.tailwindcss = {
+      capabilities = capabilities,
+    }
 
     -- JSON
-    require('lspconfig').jsonls.setup({
+    vim.lsp.config.jsonls = {
       capabilities = capabilities,
       settings = {
         json = {
           schemas = require('schemastore').json.schemas(),
         },
       },
-    })
+    }
 
-    -- null-ls
+    -- ESLint (replaces eslint_d from none-ls)
+    vim.lsp.config.eslint = {
+      capabilities = capabilities,
+      on_attach = function(client, bufnr)
+        -- Enable formatting via ESLint if available
+        if client.supports_method("textDocument/formatting") then
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+              vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 5000 })
+            end,
+          })
+        end
+      end,
+      root_dir = function(fname)
+        -- Only enable if project has eslint config
+        local util = require('vim.lsp._dynamic')
+        return util.root_pattern('.eslintrc.js', '.eslintrc.json', '.eslintrc', 'eslint.config.js')(fname)
+      end,
+    }
+
+    -- Enable all LSP servers
+    vim.lsp.enable('clangd')
+    vim.lsp.enable('eslint')
+    vim.lsp.enable('intelephense')
+    vim.lsp.enable('phpactor')
+    vim.lsp.enable('volar')
+    vim.lsp.enable('tailwindcss')
+    vim.lsp.enable('jsonls')
+
+    -- none-ls (drop-in replacement for null-ls, uses same module name)
     local null_ls = require('null-ls')
     local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
     null_ls.setup({
       temp_dir = '/tmp',
       sources = {
-        null_ls.builtins.diagnostics.eslint_d.with({
-          condition = function(utils)
-            return utils.root_has_file({ '.eslintrc.js' })
-          end,
-        }),
+        -- ESLint is now handled by the eslint LSP server above
         -- null_ls.builtins.diagnostics.phpstan, -- TODO: Only if config file
         null_ls.builtins.diagnostics.trail_space.with({ disabled_filetypes = { 'NvimTree' } }),
-        null_ls.builtins.formatting.eslint_d.with({
-          condition = function(utils)
-            return utils.root_has_file({ '.eslintrc.js', '.eslintrc.json' })
-          end,
-        }),
         null_ls.builtins.formatting.pint.with({
           condition = function(utils)
             return utils.root_has_file({ 'vendor/bin/pint' })
