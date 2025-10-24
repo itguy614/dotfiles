@@ -2,7 +2,7 @@
 	excludesfile = ~/.gitignore
     editor = nvim
 [commit]
-	gpgsign = true
+	gpgsign = false
 	template = ~/.stCommitMsg
 [gpg]
 	program = /usr/bin/gpg
