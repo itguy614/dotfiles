@@ -14,6 +14,11 @@ mkdir -p $HOME/.vim
 rm -rf $HOME/.config/kitty
 ln -s $DOTFILES/kitty $HOME/.config/kitty
 
+# Claude Code Configuration
+rm -rf $HOME/.claude/settings.json
+ln -s $DOTFILES/claude/settings.json $HOME/.claude/settings.json
+ln -s $DOTFILES/claude/statusline.sh $HOME/.claude/statusline.sh
+
 # Ghostty Configuration (Terminal)
 rm -rf $HOME/.config/ghostty
 ln -s $DOTFILES/ghostty $HOME/.config/ghostty

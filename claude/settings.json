@@ -1,0 +1,161 @@
+{
+  "model": "haiku",
+  "maxTokens": 4096,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "Glob",
+      "Grep",
+      "LS",
+      "List",
+      "Find",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(npm run test:*)",
+      "Bash(yarn:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(grep:*)",
+      "WebFetch",
+      "WebSearch",
+      "Task",
+      "Agent"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./**/.env)",
+      "Read(./config/credentials.json)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Read(./node_modules/**)",
+      "Write(./node_modules/**)",
+      "Read(./build/**)",
+      "Write(./build/**)",
+      "Read(./dist/**)",
+      "Write(./dist/**)",
+      "Read(./.next/**)",
+      "Read(./target/**)",
+      "Write(./production.config.*)",
+      "Write(./prod.config.*)",
+      "Edit(./production.config.*)",
+      "Edit(./kubernetes/**)",
+      "Edit(./terraform/**)",
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(:*deploy:*)",
+      "Bash(:*publish:*)",
+      "Bash(git push:*)",
+      "Bash(npm publish:*)"
+    ],
+    "ask": []
+  },
+  "env": {},
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write \"$CLAUDE_FILE_PATHS\" 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit(*.ts)|Edit(*.tsx)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.(ts|tsx)$ ]]; then npx tsc --noEmit --skipLibCheck \"$CLAUDE_FILE_PATHS\" 2>&1 || echo '⚠️  TypeScript errors detected - please review'; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit(*.py)|Write(*.py)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -m black \"$CLAUDE_FILE_PATHS\" 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "python -m flake8 \"$CLAUDE_FILE_PATHS\" 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit(*.json)|Write(*.json)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "for file in $CLAUDE_FILE_PATHS; do jq empty \"$file\" 2>/dev/null || echo \"⚠️  Invalid JSON in $file\"; done"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.env ]]; then echo 'BLOCKED: Cannot read .env files'; exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🚀 Claude Code session started in $CLAUDE_PROJECT_DIR'"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {},
+  "extraKnownMarketplaces": {},
+  "sandbox": {
+    "enabled": false,
+    "autoAllowBashIfSandboxed": false,
+    "excludedCommands": [],
+    "network": {
+      "allowUnixSockets": [],
+      "allowDomains": [],
+      "blockDomains": []
+    }
+  },
+  "spinnerTipsEnabled": true,
+  "autoAcceptPermissions": false,
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/kwolf/code/itguy614/dotfiles/claude/statusline.sh",
+    "padding": 0
+  },
+  "projectName": "",
+  "defaultBranch": "main",
+  "testCommand": "npm test",
+  "lintCommand": "npm run lint",
+  "buildCommand": "npm run build",
+  "_metadata": {
+    "version": "1.0.0",
+    "description": "Claude Code settings for [project name]",
+    "lastModified": "2025-10-23",
+    "author": "Your Name"
+  }
+}

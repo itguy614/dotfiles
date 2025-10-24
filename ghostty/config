@@ -9,3 +9,4 @@ background-blur = true
 window-height = 43
 window-width = 132
 bold-is-bright = true
+keybind = shift+enter=text:\x1b\r
