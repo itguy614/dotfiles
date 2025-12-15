@@ -34,6 +34,10 @@ ln -s $DOTFILES/tmux/tmux.conf $HOME/.tmux.conf
 rm -rf $HOME/.local/bin/t
 ln -s $DOTFILES/scripts/t $HOME/.local/bin/t
 
+# Screen Configuration
+rm -rf $HOME/.screenrc
+ln -s $DOTFILES/screen/screenrc $HOME/.screenrc
+
 # GIT Configuration
 rm -rf $HOME/.gitignore
 ln -s $DOTFILES/git/gitignore $HOME/.gitignore
