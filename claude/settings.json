@@ -1,6 +1,5 @@
 {
-  "model": "haiku",
-  "maxTokens": 4096,
+  "env": {},
   "permissions": {
     "allow": [
       "Read",
@@ -48,21 +47,15 @@
       "Edit(./production.config.*)",
       "Edit(./kubernetes/**)",
       "Edit(./terraform/**)",
-      "Bash(rm:*)",
       "Bash(sudo:*)",
       "Bash(su:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)",
       "Bash(chmod:*)",
       "Bash(chown:*)",
       "Bash(:*deploy:*)",
-      "Bash(:*publish:*)",
-      "Bash(git push:*)",
-      "Bash(npm publish:*)"
+      "Bash(:*publish:*)"
     ],
     "ask": []
   },
-  "env": {},
   "hooks": {
     "PostToolUse": [
       {
@@ -128,25 +121,25 @@
       }
     ]
   },
-  "enabledPlugins": {},
-  "extraKnownMarketplaces": {},
-  "sandbox": {
-    "enabled": false,
-    "autoAllowBashIfSandboxed": false,
-    "excludedCommands": [],
-    "network": {
-      "allowUnixSockets": [],
-      "allowDomains": [],
-      "blockDomains": []
-    }
-  },
-  "spinnerTipsEnabled": true,
-  "autoAcceptPermissions": false,
   "statusLine": {
     "type": "command",
     "command": "$HOME/code/itguy614/dotfiles/claude/statusline.sh",
     "padding": 0
   },
+  "enabledPlugins": {},
+  "extraKnownMarketplaces": {},
+  "sandbox": {
+    "enabled": false,
+    "autoAllowBashIfSandboxed": false,
+    "network": {
+      "allowUnixSockets": []
+    },
+    "excludedCommands": []
+  },
+  "spinnerTipsEnabled": true,
+  "alwaysThinkingEnabled": true,
+  "maxTokens": 4096,
+  "autoAcceptPermissions": false,
   "projectName": "",
   "defaultBranch": "main",
   "testCommand": "npm test",
