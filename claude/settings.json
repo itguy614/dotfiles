@@ -129,6 +129,7 @@
   "enabledPlugins": {},
   "extraKnownMarketplaces": {},
   "sandbox": {
+<<<<<<< HEAD
     "enabled": false,
     "autoAllowBashIfSandboxed": false,
     "network": {
@@ -138,6 +139,16 @@
   },
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
+=======
+    "network": {
+      "allowUnixSockets": []
+    },
+    "excludedCommands": [],
+    "autoAllowBashIfSandboxed": false,
+    "enabled": false
+  },
+  "spinnerTipsEnabled": true,
+>>>>>>> 2b758420494eb94c577a1734627e3f4ca5701cde
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",
