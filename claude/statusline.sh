@@ -41,7 +41,7 @@ fi
 # Get git branch if in a git repository
 git_branch=""
 if git -C "$cwd" rev-parse --git-dir > /dev/null 2>&1; then
-    branch=$(git -C "$cwd" -c core.fileMode=false config --global --add safe.directory '*' 2>/dev/null; git -C "$cwd" branch --show-current 2>/dev/null)
+    branch=$(git -C "$cwd" branch --show-current 2>/dev/null)
     if [[ -n "$branch" ]]; then
         # Yellow brackets around branch name (using ANSI codes)
         git_branch=$(printf "\033[33m‹%s›\033[0m " "$branch")
