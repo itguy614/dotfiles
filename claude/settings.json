@@ -1,6 +1,5 @@
 {
-  "model": "haiku",
-  "maxTokens": 4096,
+  "env": {},
   "permissions": {
     "allow": [
       "Read",
@@ -62,7 +61,6 @@
     ],
     "ask": []
   },
-  "env": {},
   "hooks": {
     "PostToolUse": [
       {
@@ -128,25 +126,24 @@
       }
     ]
   },
-  "enabledPlugins": {},
-  "extraKnownMarketplaces": {},
-  "sandbox": {
-    "enabled": false,
-    "autoAllowBashIfSandboxed": false,
-    "excludedCommands": [],
-    "network": {
-      "allowUnixSockets": [],
-      "allowDomains": [],
-      "blockDomains": []
-    }
-  },
-  "spinnerTipsEnabled": true,
-  "autoAcceptPermissions": false,
   "statusLine": {
     "type": "command",
     "command": "$HOME/code/itguy614/dotfiles/claude/statusline.sh",
     "padding": 0
   },
+  "enabledPlugins": {},
+  "extraKnownMarketplaces": {},
+  "sandbox": {
+    "enabled": false,
+    "autoAllowBashIfSandboxed": false,
+    "network": {
+      "allowUnixSockets": []
+    },
+    "excludedCommands": []
+  },
+  "spinnerTipsEnabled": true,
+  "maxTokens": 4096,
+  "autoAcceptPermissions": false,
   "projectName": "",
   "defaultBranch": "main",
   "testCommand": "npm test",
