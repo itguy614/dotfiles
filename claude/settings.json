@@ -47,17 +47,12 @@
       "Edit(./production.config.*)",
       "Edit(./kubernetes/**)",
       "Edit(./terraform/**)",
-      "Bash(rm:*)",
       "Bash(sudo:*)",
       "Bash(su:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)",
       "Bash(chmod:*)",
       "Bash(chown:*)",
       "Bash(:*deploy:*)",
-      "Bash(:*publish:*)",
-      "Bash(git push:*)",
-      "Bash(npm publish:*)"
+      "Bash(:*publish:*)"
     ],
     "ask": []
   },
@@ -134,6 +129,7 @@
   "enabledPlugins": {},
   "extraKnownMarketplaces": {},
   "sandbox": {
+
     "enabled": false,
     "autoAllowBashIfSandboxed": false,
     "network": {
@@ -142,6 +138,7 @@
     "excludedCommands": []
   },
   "spinnerTipsEnabled": true,
+  "alwaysThinkingEnabled": true,
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",
