@@ -1,6 +1,5 @@
-font-family = "Google Sans Code"
-font-size = 18
-font-feature=-calt, -liga, -dlig
+font-family = "RobotoMono Nerd Font Mono"
+font-size = 16
 adjust-cell-height = 50%
 adjust-cursor-height = 110%
 cursor-style = bar

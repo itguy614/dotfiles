@@ -25,17 +25,10 @@
       "Agent"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
       "Read(./secrets/**)",
       "Read(./**/.env)",
       "Read(./config/credentials.json)",
-      "Write(./.env)",
-      "Write(./.env.*)",
-      "Edit(./.env)",
-      "Edit(./.env.*)",
       "Read(./node_modules/**)",
-      "Write(./node_modules/**)",
       "Read(./build/**)",
       "Write(./build/**)",
       "Read(./dist/**)",
@@ -99,17 +92,7 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.env ]]; then echo 'BLOCKED: Cannot read .env files'; exit 2; fi"
-          }
-        ]
-      }
-    ],
+    "PreToolUse": [],
     "SessionStart": [
       {
         "hooks": [
@@ -126,10 +109,13 @@
     "command": "$HOME/code/itguy614/dotfiles/claude/statusline.sh",
     "padding": 0
   },
-  "enabledPlugins": {},
+  "enabledPlugins": {
+    "project-manager-tools@stat-ai": true,
+    "developer-tools@stat-ai": true,
+    "shared-tools@stat-ai": true
+  },
   "extraKnownMarketplaces": {},
   "sandbox": {
-
     "enabled": false,
     "autoAllowBashIfSandboxed": false,
     "network": {
@@ -142,7 +128,7 @@
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",
-  "defaultBranch": "main",
+  "defaultBranch": "develop",
   "testCommand": "npm test",
   "lintCommand": "npm run lint",
   "buildCommand": "npm run build",
@@ -150,6 +136,6 @@
     "version": "1.0.0",
     "description": "Claude Code settings for [project name]",
     "lastModified": "2025-10-23",
-    "author": "Your Name"
+    "author": "Kurt Wolf <kwolf@gohcl.com>"
   }
 }
