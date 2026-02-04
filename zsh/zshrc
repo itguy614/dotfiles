@@ -223,6 +223,9 @@ export HERD_PHP_81_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/c
 # GnuPG
 export GPGKEY=8060A02E
 
+# Tmux auto-attach and aliases
+[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
+
 
 # Herd injected PHP 8.4 configuration.
 export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84/"
