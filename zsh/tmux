@@ -201,8 +201,9 @@ function tmproj() {
     else
         session_name=$(basename "$dir")
     fi
-    # Replace dots with underscores (tmux doesn't like dots in names)
+    # Replace dots and slashes (tmux doesn't like dots or slashes in names)
     session_name="${session_name//./_}"
+    session_name="${session_name//\//-}"
 
     if tmux has-session -t "$session_name" 2>/dev/null; then
         tma "$session_name"
