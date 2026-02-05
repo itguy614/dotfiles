@@ -220,6 +220,9 @@ compdef _gitignoreio gi
 # GnuPG
 export GPGKEY=8060A02E
 
+# Tmux auto-attach and aliases
+[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
+
 
 # Herd injected PHP configuration.
 export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84/"

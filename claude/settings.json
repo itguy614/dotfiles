@@ -49,10 +49,11 @@
     ],
     "ask": []
   },
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit(*.js)|Write(*.js)",
         "hooks": [
           {
             "type": "command",
@@ -104,15 +105,13 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "$HOME/code/itguy614/dotfiles/claude/statusline.sh",
-    "padding": 0
-  },
   "enabledPlugins": {
-    "project-manager-tools@stat-ai": true,
+    "shared-tools@stat-ai": false,
+    "database-developer-tools@stat-ai": true,
     "developer-tools@stat-ai": true,
-    "shared-tools@stat-ai": true
+    "project-manager-tools@stat-ai": true,
+    "qa-tools@stat-ai": true,
+    "web-developer-tools@stat-ai": true
   },
   "extraKnownMarketplaces": {},
   "sandbox": {

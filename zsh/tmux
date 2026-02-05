@@ -1,0 +1,254 @@
+# Tmux Configuration for Zsh
+# Auto-attach and useful aliases
+
+#--------------------------------------------------------------------------
+# Auto-attach to tmux session
+#--------------------------------------------------------------------------
+
+# Only auto-attach if:
+# - Not already inside tmux
+# - Not in VS Code integrated terminal
+# - tmux is installed
+# - This is an interactive shell
+if [[ -z "$TMUX" ]] && [[ "$TERM_PROGRAM" != "vscode" ]] && [[ -z "$VSCODE_INJECTION" ]] && command -v tmux &> /dev/null && [[ $- == *i* ]]; then
+    # Try to get the last used session
+    last_session=$(tmux list-sessions -F "#{session_last_attached} #{session_name}" 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)
+
+    if [[ -n "$last_session" ]]; then
+        # Attach to the last used session
+        exec tmux attach-session -t "$last_session"
+    elif tmux has-session -t "Workspace" 2>/dev/null; then
+        # Attach to Workspace session if it exists
+        exec tmux attach-session -t "Workspace"
+    else
+        # Create and attach to a new Workspace session
+        exec tmux new-session -s "Workspace"
+    fi
+fi
+
+#--------------------------------------------------------------------------
+# Tmux Aliases (tm prefix)
+#--------------------------------------------------------------------------
+
+# List all sessions
+alias tml="tmux list-sessions"
+
+# Attach/switch to a session (default: last used or Workspace)
+# Usage: tma [session-name]
+# When already in tmux, switches instead of attaching (avoids nesting)
+# If session doesn't exist, prompts to create it
+function tma() {
+    local session_name="$1"
+
+    # If a session name is provided, check if it exists
+    if [[ -n "$session_name" ]] && ! tmux has-session -t "$session_name" 2>/dev/null; then
+        echo "Session '$session_name' does not exist."
+        echo -n "Would you like to create it? [y/N] "
+        read -r response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            tmn "$session_name"
+            return
+        else
+            echo "Aborted."
+            return 1
+        fi
+    fi
+
+    if [[ -n "$TMUX" ]]; then
+        # Already in tmux: switch to specified session or last one
+        tmux switch-client ${session_name:+-t "$session_name"}
+    else
+        # Not in tmux: attach normally
+        tmux attach-session ${session_name:+-t "$session_name"}
+    fi
+}
+
+# Create a new session
+# Usage: tmn [session-name]
+# When already in tmux, creates detached session and switches to it (avoids nesting)
+function tmn() {
+    if [[ -n "$TMUX" ]]; then
+        # Already in tmux: create detached, then switch to it
+        if [[ -n "$1" ]]; then
+            tmux new-session -d -s "$1" && tmux switch-client -t "$1"
+        else
+            # Let tmux auto-name it, capture the name, then switch
+            local new_session
+            new_session=$(tmux new-session -d -P -F "#{session_name}")
+            tmux switch-client -t "$new_session"
+        fi
+    else
+        # Not in tmux: create and attach normally
+        if [[ -n "$1" ]]; then
+            tmux new-session -s "$1"
+        else
+            tmux new-session
+        fi
+    fi
+}
+
+# Kill a session
+# Usage: tmk <session-name>
+function tmk() {
+    if [[ -n "$1" ]]; then
+        tmux kill-session -t "$1"
+    else
+        echo "Usage: tmk <session-name>"
+        echo "Available sessions:"
+        tmux list-sessions 2>/dev/null || echo "  No active sessions"
+    fi
+}
+
+# Switch to a session (with fzf if available)
+# Usage: tms [session-name]
+function tms() {
+    if [[ -n "$1" ]]; then
+        # Direct switch/attach if session name provided
+        if [[ -n "$TMUX" ]]; then
+            tmux switch-client -t "$1"
+        else
+            tmux attach-session -t "$1"
+        fi
+    elif command -v fzf &> /dev/null; then
+        # Use fzf for interactive selection
+        local session
+        session=$(tmux list-sessions -F "#{session_name}: #{session_windows} windows (created #{session_created_string})" 2>/dev/null | fzf --height 40% --reverse --header "Select tmux session" | cut -d':' -f1)
+        if [[ -n "$session" ]]; then
+            if [[ -n "$TMUX" ]]; then
+                tmux switch-client -t "$session"
+            else
+                tmux attach-session -t "$session"
+            fi
+        fi
+    else
+        # Fallback: list sessions and prompt
+        echo "Available sessions:"
+        tmux list-sessions 2>/dev/null || echo "  No active sessions"
+        echo ""
+        echo "Usage: tms <session-name>"
+        echo "Tip: Install fzf for interactive session switching"
+    fi
+}
+
+# Detach from current session
+alias tmd="tmux detach-client"
+
+# Rename current session
+# Usage: tmr <new-name>
+function tmr() {
+    if [[ -n "$1" ]]; then
+        tmux rename-session "$1"
+    else
+        echo "Usage: tmr <new-name>"
+    fi
+}
+
+#--------------------------------------------------------------------------
+# Window Management (tmw prefix)
+#--------------------------------------------------------------------------
+
+# List windows in current session
+alias tmw="tmux list-windows"
+
+# New window (in current directory)
+alias tmwn="tmux new-window -c '#{pane_current_path}'"
+
+# Kill current window
+alias tmwk="tmux kill-window"
+
+# Switch window with fzf
+function tmws() {
+    if command -v fzf &> /dev/null; then
+        local window
+        window=$(tmux list-windows -F "#{window_index}: #{window_name} #{window_flags}" | fzf --height 40% --reverse | cut -d':' -f1)
+        [[ -n "$window" ]] && tmux select-window -t "$window"
+    else
+        tmux list-windows
+    fi
+}
+
+#--------------------------------------------------------------------------
+# Pane Management (tmp prefix)
+#--------------------------------------------------------------------------
+
+# Split panes (keeping current path)
+alias tmph="tmux split-window -h -c '#{pane_current_path}'"
+alias tmpv="tmux split-window -v -c '#{pane_current_path}'"
+
+# Kill current pane
+alias tmpk="tmux kill-pane"
+
+# Zoom toggle (maximize/restore pane)
+alias tmz="tmux resize-pane -Z"
+
+#--------------------------------------------------------------------------
+# Project Sessions
+#--------------------------------------------------------------------------
+
+# Create/attach session named after directory
+# Usage: tmproj [path]  (defaults to current dir)
+# Session name format: org/project
+function tmproj() {
+    local dir="${1:-.}"
+    dir=$(realpath "$dir")
+
+    # Extract org/project from path if under ~/code
+    local session_name
+    if [[ "$dir" == "$HOME/code/"* ]]; then
+        # Get org/project portion
+        session_name=$(echo "$dir" | sed "s|$HOME/code/||" | cut -d'/' -f1-2)
+    else
+        session_name=$(basename "$dir")
+    fi
+    # Replace dots with underscores (tmux doesn't like dots in names)
+    session_name="${session_name//./_}"
+
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+        tma "$session_name"
+    else
+        if [[ -n "$TMUX" ]]; then
+            tmux new-session -d -s "$session_name" -c "$dir" && tmux switch-client -t "$session_name"
+        else
+            tmux new-session -s "$session_name" -c "$dir"
+        fi
+    fi
+}
+
+# Quick project jump (fzf through ~/code/org/project directories)
+function tmj() {
+    if command -v fzf &> /dev/null; then
+        local dir
+        dir=$(find ~/code -mindepth 2 -maxdepth 2 -type d 2>/dev/null | \
+              sed "s|$HOME/code/||" | \
+              fzf --height 40% --reverse --header "Select project (org/project)")
+        [[ -n "$dir" ]] && tmproj "$HOME/code/$dir"
+    else
+        echo "Install fzf for interactive project selection"
+    fi
+}
+
+#--------------------------------------------------------------------------
+# Utility Functions
+#--------------------------------------------------------------------------
+
+# Kill all sessions except current
+function tmka() {
+    local current_session=$(tmux display-message -p '#S')
+    tmux list-sessions -F '#{session_name}' | grep -v "^${current_session}$" | xargs -I {} tmux kill-session -t {}
+    echo "Killed all sessions except: $current_session"
+}
+
+# Session info
+alias tmi="tmux display-message -p 'Session: #S | Window: #I:#W | Pane: #P'"
+
+# Send command to all panes in current window
+# Usage: tmsend <command>
+function tmsend() {
+    tmux list-panes -F '#{pane_index}' | xargs -I {} tmux send-keys -t {} "$*" Enter
+}
+
+# Popup scratch terminal (tmux 3.2+)
+alias tmpop="tmux popup -E -w 80% -h 80%"
+
+# Clear all pane history
+alias tmclear="tmux clear-history"

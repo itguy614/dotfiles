@@ -95,6 +95,9 @@ ln -s $DOTFILES/zsh/paths $HOME/.paths
 rm -rf $HOME/.aliases
 ln -s $DOTFILES/zsh/aliases $HOME/.aliases
 
+rm -rf $HOME/.tmux.zsh
+ln -s $DOTFILES/zsh/tmux $HOME/.tmux.zsh
+
 # Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
