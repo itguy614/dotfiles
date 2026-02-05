@@ -17,6 +17,7 @@ ln -s $DOTFILES/kitty $HOME/.config/kitty
 # Claude Code Configuration
 rm -rf $HOME/.claude/settings.json
 ln -s $DOTFILES/claude/settings.json $HOME/.claude/settings.json
+rm -rf $HOME/.claude/statusline.sh
 ln -s $DOTFILES/claude/statusline.sh $HOME/.claude/statusline.sh
 
 # Ghostty Configuration (Terminal)
