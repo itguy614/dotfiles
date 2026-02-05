@@ -8,9 +8,10 @@
 # Only auto-attach if:
 # - Not already inside tmux
 # - Not in VS Code integrated terminal
+# - ~/.notmux doesn't exist (touch ~/.notmux to disable on any machine)
 # - tmux is installed
 # - This is an interactive shell
-if [[ -z "$TMUX" ]] && [[ "$TERM_PROGRAM" != "vscode" ]] && [[ -z "$VSCODE_INJECTION" ]] && command -v tmux &> /dev/null && [[ $- == *i* ]]; then
+if [[ -z "$TMUX" ]] && [[ "$TERM_PROGRAM" != "vscode" ]] && [[ -z "$VSCODE_INJECTION" ]] && [[ ! -f "$HOME/.notmux" ]] && command -v tmux &> /dev/null && [[ $- == *i* ]]; then
     # Try to get the last used session
     last_session=$(tmux list-sessions -F "#{session_last_attached} #{session_name}" 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)
 
@@ -245,6 +246,25 @@ alias tmi="tmux display-message -p 'Session: #S | Window: #I:#W | Pane: #P'"
 # Usage: tmsend <command>
 function tmsend() {
     tmux list-panes -F '#{pane_index}' | xargs -I {} tmux send-keys -t {} "$*" Enter
+}
+
+# SSH without tmux nesting
+# Detaches local tmux, SSHs to remote, reattaches when done
+# Usage: tmssh <ssh-args>
+function tmssh() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: tmssh <ssh-args>"
+        return 1
+    fi
+
+    if [[ -z "$TMUX" ]]; then
+        ssh "$@"
+        return
+    fi
+
+    local session
+    session=$(tmux display-message -p '#S')
+    tmux detach-client -E "ssh $* ; tmux attach-session -t \"$session\" 2>/dev/null || tmux attach-session"
 }
 
 # Popup scratch terminal (tmux 3.2+)
