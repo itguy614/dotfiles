@@ -10,8 +10,16 @@
 # - Not in VS Code integrated terminal
 # - ~/.notmux doesn't exist (touch ~/.notmux to disable on any machine)
 # - tmux is installed
-# - This is an interactive shell
-if [[ -z "$TMUX" ]] && [[ "$TERM_PROGRAM" != "vscode" ]] && [[ -z "$VSCODE_INJECTION" ]] && [[ ! -f "$HOME/.notmux" ]] && command -v tmux &> /dev/null && [[ $- == *i* ]]; then
+# - This is an interactive shell with a real TTY (stdin, stdout, and /dev/tty)
+if [[ -z "$TMUX" ]] && \
+   [[ "$TERM_PROGRAM" != "vscode" ]] && \
+   [[ -z "$VSCODE_INJECTION" ]] && \
+   [[ ! -f "$HOME/.notmux" ]] && \
+   command -v tmux &> /dev/null && \
+   [[ $- == *i* ]] && \
+   [[ -t 0 ]] && [[ -t 1 ]] && \
+   [[ -r /dev/tty ]]; then
+
     # Try to get the last used session
     last_session=$(tmux list-sessions -F "#{session_last_attached} #{session_name}" 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)
 
@@ -204,6 +212,8 @@ function tmproj() {
     # Replace dots and slashes (tmux doesn't like dots or slashes in names)
     session_name="${session_name//./_}"
     session_name="${session_name//\//-}"
+    # Prefix with underscore if name starts with dash (would be interpreted as flag)
+    [[ "$session_name" == -* ]] && session_name="_$session_name"
 
     if tmux has-session -t "$session_name" 2>/dev/null; then
         tma "$session_name"
@@ -236,7 +246,9 @@ function tmj() {
 # Kill all sessions except current
 function tmka() {
     local current_session=$(tmux display-message -p '#S')
-    tmux list-sessions -F '#{session_name}' | grep -v "^${current_session}$" | xargs -I {} tmux kill-session -t {}
+    tmux list-sessions -F '#{session_name}' | grep -v "^${current_session}$" | while read -r sess; do
+        tmux kill-session -t "=$sess"
+    done
     echo "Killed all sessions except: $current_session"
 }
 
@@ -263,9 +275,11 @@ function tmssh() {
         return
     fi
 
-    local session
+    local session ssh_args
     session=$(tmux display-message -p '#S')
-    tmux detach-client -E "ssh $* ; tmux attach-session -t \"$session\" 2>/dev/null || tmux attach-session"
+    # Properly quote SSH arguments for the detach command
+    ssh_args=$(printf '%q ' "$@")
+    tmux detach-client -E "ssh ${ssh_args}; tmux attach-session -t \"$session\" 2>/dev/null || tmux attach-session"
 }
 
 # Popup scratch terminal (tmux 3.2+)
