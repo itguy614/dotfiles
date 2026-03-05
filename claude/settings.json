@@ -110,7 +110,9 @@
     "developer-tools@stat-ai": true,
     "project-manager-tools@stat-ai": true,
     "qa-tools@stat-ai": true,
-    "web-developer-tools@stat-ai": true
+    "web-developer-tools@stat-ai": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "embedded-developer-tools@stat-ai": true
   },
   "extraKnownMarketplaces": {},
   "sandbox": {

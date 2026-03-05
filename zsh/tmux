@@ -25,10 +25,10 @@ if [[ -z "$TMUX" ]] && \
 
     if [[ -n "$last_session" ]]; then
         # Attach to the last used session
-        exec tmux attach-session -t "$last_session"
-    elif tmux has-session -t "Workspace" 2>/dev/null; then
+        exec tmux attach-session -t "=$last_session"
+    elif tmux has-session -t "=Workspace" 2>/dev/null; then
         # Attach to Workspace session if it exists
-        exec tmux attach-session -t "Workspace"
+        exec tmux attach-session -t "=Workspace"
     else
         # Create and attach to a new Workspace session
         exec tmux new-session -s "Workspace"
@@ -50,7 +50,7 @@ function tma() {
     local session_name="$1"
 
     # If a session name is provided, check if it exists
-    if [[ -n "$session_name" ]] && ! tmux has-session -t "$session_name" 2>/dev/null; then
+    if [[ -n "$session_name" ]] && ! tmux has-session -t "=$session_name" 2>/dev/null; then
         echo "Session '$session_name' does not exist."
         echo -n "Would you like to create it? [y/N] "
         read -r response
@@ -65,10 +65,10 @@ function tma() {
 
     if [[ -n "$TMUX" ]]; then
         # Already in tmux: switch to specified session or last one
-        tmux switch-client ${session_name:+-t "$session_name"}
+        tmux switch-client ${session_name:+-t "=$session_name"}
     else
         # Not in tmux: attach normally
-        tmux attach-session ${session_name:+-t "$session_name"}
+        tmux attach-session ${session_name:+-t "=$session_name"}
     fi
 }
 
@@ -79,7 +79,7 @@ function tmn() {
     if [[ -n "$TMUX" ]]; then
         # Already in tmux: create detached, then switch to it
         if [[ -n "$1" ]]; then
-            tmux new-session -d -s "$1" && tmux switch-client -t "$1"
+            tmux new-session -d -s "$1" && tmux switch-client -t "=$1"
         else
             # Let tmux auto-name it, capture the name, then switch
             local new_session
@@ -100,7 +100,7 @@ function tmn() {
 # Usage: tmk <session-name>
 function tmk() {
     if [[ -n "$1" ]]; then
-        tmux kill-session -t "$1"
+        tmux kill-session -t "=$1"
     else
         echo "Usage: tmk <session-name>"
         echo "Available sessions:"
@@ -114,9 +114,9 @@ function tms() {
     if [[ -n "$1" ]]; then
         # Direct switch/attach if session name provided
         if [[ -n "$TMUX" ]]; then
-            tmux switch-client -t "$1"
+            tmux switch-client -t "=$1"
         else
-            tmux attach-session -t "$1"
+            tmux attach-session -t "=$1"
         fi
     elif command -v fzf &> /dev/null; then
         # Use fzf for interactive selection
@@ -124,9 +124,9 @@ function tms() {
         session=$(tmux list-sessions -F "#{session_name}: #{session_windows} windows (created #{session_created_string})" 2>/dev/null | fzf --height 40% --reverse --header "Select tmux session" | cut -d':' -f1)
         if [[ -n "$session" ]]; then
             if [[ -n "$TMUX" ]]; then
-                tmux switch-client -t "$session"
+                tmux switch-client -t "=$session"
             else
-                tmux attach-session -t "$session"
+                tmux attach-session -t "=$session"
             fi
         fi
     else
@@ -209,17 +209,16 @@ function tmproj() {
     else
         session_name=$(basename "$dir")
     fi
-    # Replace dots and slashes (tmux doesn't like dots or slashes in names)
+    # Replace dots (tmux doesn't like dots in names)
     session_name="${session_name//./_}"
-    session_name="${session_name//\//-}"
     # Prefix with underscore if name starts with dash (would be interpreted as flag)
     [[ "$session_name" == -* ]] && session_name="_$session_name"
 
-    if tmux has-session -t "$session_name" 2>/dev/null; then
+    if tmux has-session -t "=$session_name" 2>/dev/null; then
         tma "$session_name"
     else
         if [[ -n "$TMUX" ]]; then
-            tmux new-session -d -s "$session_name" -c "$dir" && tmux switch-client -t "$session_name"
+            tmux new-session -d -s "$session_name" -c "$dir" && tmux switch-client -t "=$session_name"
         else
             tmux new-session -s "$session_name" -c "$dir"
         fi
@@ -279,7 +278,7 @@ function tmssh() {
     session=$(tmux display-message -p '#S')
     # Properly quote SSH arguments for the detach command
     ssh_args=$(printf '%q ' "$@")
-    tmux detach-client -E "ssh ${ssh_args}; tmux attach-session -t \"$session\" 2>/dev/null || tmux attach-session"
+    tmux detach-client -E "ssh ${ssh_args}; tmux attach-session -t \"=$session\" 2>/dev/null || tmux attach-session"
 }
 
 # Popup scratch terminal (tmux 3.2+)

@@ -12,7 +12,6 @@ This is a **dotfiles repository** containing configuration files for development
 - **`claude/`** - Claude Code settings and configuration
   - `settings.json` - Primary Claude Code settings (permissions, hooks, model, etc.)
   - `settings.md` - Documentation for settings.json options
-  - `statusline.sh` - Custom status line command for Claude Code
 - **`nvim/`** - Neovim configuration
   - `init.lua` - Main entry point, loads plugins and user config
   - `lua/user/plugins.lua` - Lazy package manager plugin specs

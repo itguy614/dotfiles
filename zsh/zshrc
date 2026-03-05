@@ -26,11 +26,9 @@ plugins=(
     extract
     git
     gitignore
-    macos
     npm
     pip
     python
-    brew
     extract
     sudo
     tmux
@@ -39,8 +37,6 @@ plugins=(
     web-search
     zsh-autosuggestions
  aws)
-
-source $ZSH/oh-my-zsh.sh
 
 export KEYTIMEOUT=15
 
@@ -171,11 +167,6 @@ function db {
     fi
 }
 
-# Homebrew
-alias brewr="arch -x86_64 /usr/local/bin/brew $@"
-alias leg="arch -x86_64 $@"
-alias arm="arch -x86_64 $@"
-
 # Print Source Code
 alias printcode="a2ps -1 --line-numbers=1 -g -E"
 
@@ -183,25 +174,11 @@ alias printcode="a2ps -1 --line-numbers=1 -g -E"
 export GPG_TTY=$(tty)
 
 # PyEnv
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
-# nvm
-case "$OSTYPE" in
-    darwin*)
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-	[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-	;;
-    lin*)
-	export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-	;;
-    *)
-    ;;
-esac
+if [ -d "$HOME/.pyenv" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
 
 # GitIgnore
 function gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;}
@@ -223,16 +200,11 @@ export GPGKEY=8060A02E
 # Tmux auto-attach and aliases
 [[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
 
-
-# Herd injected PHP configuration.
-export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84/"
-export HERD_PHP_83_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/83/"
-export HERD_PHP_82_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/82/"
-export HERD_PHP_81_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/81/"
-
-
-# Herd injected PHP binary.
-export PATH="/Users/kwolf/Library/Application Support/Herd/bin/":$PATH
+# Source OS-specific configuration
+[[ -f ~/.zshrc.os ]] && source ~/.zshrc.os
 
 # Source local configuration if it exists
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# Source Oh My Zsh (must come after OS and local configs so plugins+= takes effect)
+source $ZSH/oh-my-zsh.sh

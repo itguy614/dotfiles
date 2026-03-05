@@ -17,9 +17,6 @@ ln -s $DOTFILES/kitty $HOME/.config/kitty
 # Claude Code Configuration
 rm -rf $HOME/.claude/settings.json
 ln -s $DOTFILES/claude/settings.json $HOME/.claude/settings.json
-rm -rf $HOME/.claude/statusline.sh
-ln -s $DOTFILES/claude/statusline.sh $HOME/.claude/statusline.sh
-
 # Ghostty Configuration (Terminal)
 rm -rf $HOME/.config/ghostty
 ln -s $DOTFILES/ghostty $HOME/.config/ghostty
@@ -34,6 +31,12 @@ ln -s $DOTFILES/tmux/tmux.conf $HOME/.tmux.conf
 
 rm -rf $HOME/.local/bin/t
 ln -s $DOTFILES/scripts/t $HOME/.local/bin/t
+
+rm -rf $HOME/.local/bin/tmux-project-jump
+ln -s $DOTFILES/scripts/tmux-project-jump $HOME/.local/bin/tmux-project-jump
+
+rm -rf $HOME/.local/bin/tmux-session-switch
+ln -s $DOTFILES/scripts/tmux-session-switch $HOME/.local/bin/tmux-session-switch
 
 # Screen Configuration
 rm -rf $HOME/.screenrc
@@ -90,11 +93,8 @@ ln -s $DOTFILES/nvim $HOME/.config/nvim
 rm -rf $HOME/.zshrc
 ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
 
-rm -rf $HOME/.paths
-ln -s $DOTFILES/zsh/paths $HOME/.paths
-
-rm -rf $HOME/.aliases
-ln -s $DOTFILES/zsh/aliases $HOME/.aliases
+rm -rf $HOME/.zshrc.os
+ln -s $DOTFILES/zsh/zshrc.$os $HOME/.zshrc.os
 
 rm -rf $HOME/.tmux.zsh
 ln -s $DOTFILES/zsh/tmux $HOME/.tmux.zsh
@@ -114,3 +114,10 @@ ln -s $DOTFILES/scripts/journal $HOME/.local/bin/journal
 
 rm -rf $HOME/.local/bin/j
 ln -s $HOME/.local/bin/journal $HOME/.local/bin/j
+
+#--------------------------------------------------------------------------
+# Cleanup - Remove deprecated symlinks
+#--------------------------------------------------------------------------
+rm -f $HOME/.aliases
+rm -f $HOME/.paths
+rm -f $HOME/.claude/statusline.sh

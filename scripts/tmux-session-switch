@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# tmux-session-switch - Select from existing tmux sessions and switch
+# Used by tmux popup binding (prefix J)
+
+session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | \
+  fzf --reverse --header "Switch session")
+
+[ -z "$session" ] && exit 0
+
+tmux switch-client -t "=$session"

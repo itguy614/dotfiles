@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# tmux-project-jump - Select a project from ~/code and switch to its tmux session
+# Used by tmux popup binding (prefix j)
+
+selected=$(find ~/code -mindepth 2 -maxdepth 2 -type d 2>/dev/null | \
+  sed "s|$HOME/code/||" | \
+  fzf --reverse --header "Jump to project")
+
+[ -z "$selected" ] && exit 0
+
+# Build session name (match tmproj logic: replace dots with underscores)
+session="${selected//./_}"
+
+# Prefix with underscore if name starts with dash
+[[ "$session" == -* ]] && session="_$session"
+
+path="$HOME/code/$selected"
+
+if tmux has-session -t "=$session" 2>/dev/null; then
+  tmux switch-client -t "=$session"
+else
+  tmux new-session -d -s "$session" -c "$path" && \
+    tmux switch-client -t "=$session"
+fi

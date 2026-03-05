@@ -1,0 +1,21 @@
+# macOS-specific plugins
+plugins+=(macos brew)
+
+# Homebrew
+alias brewr="arch -x86_64 /usr/local/bin/brew $@"
+alias leg="arch -x86_64 $@"
+alias arm="arch -x86_64 $@"
+
+# nvm (Homebrew-installed)
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# Herd injected PHP configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84/"
+export HERD_PHP_83_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/83/"
+export HERD_PHP_82_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/82/"
+export HERD_PHP_81_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/81/"
+
+# Herd injected PHP binary.
+export PATH="/Users/kwolf/Library/Application Support/Herd/bin/":$PATH
