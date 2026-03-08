@@ -21,6 +21,11 @@ ln -s $DOTFILES/claude/settings.json $HOME/.claude/settings.json
 rm -rf $HOME/.config/ghostty
 ln -s $DOTFILES/ghostty $HOME/.config/ghostty
 
+# WezTerm Configuration (Terminal)
+rm -rf $HOME/.config/wezterm
+mkdir -p $HOME/.config/wezterm
+ln -sf $DOTFILES/wezterm/wezterm.lua $HOME/.config/wezterm/wezterm.lua
+
 # Hyper Configuration (Terminal)
 rm -rf $HOME/.hyper.js
 ln -s $DOTFILES/hyper/hyper.js $HOME/.hyper.js

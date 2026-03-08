@@ -4,8 +4,7 @@ adjust-cell-height = 50%
 adjust-cursor-height = 110%
 cursor-style = bar
 cursor-style-blink = true
-background-opacity = .90
-background-blur = true
+background-opacity = 1
 window-height = 43
 window-width = 132
 window-padding-x = 4
@@ -14,3 +13,4 @@ bold-is-bright = true
 keybind = shift+enter=text:\x1b\r
 theme = Monokai Pro Octagon
 window-decoration = auto
+scrollback-limit = 10000
