@@ -192,8 +192,6 @@ _gitignoreio () {
   compadd -S '' `_gitignoreio_get_command_list`
 }
 
-compdef _gitignoreio gi
-
 # GnuPG
 export GPGKEY=8060A02E
 
@@ -208,3 +206,6 @@ export GPGKEY=8060A02E
 
 # Source Oh My Zsh (must come after OS and local configs so plugins+= takes effect)
 source $ZSH/oh-my-zsh.sh
+
+# Register completions (must come after oh-my-zsh.sh which provides compdef)
+compdef _gitignoreio gi
