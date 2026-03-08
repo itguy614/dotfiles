@@ -2,7 +2,7 @@
 # tmux-project-jump - Select a project from ~/code and switch to its tmux session
 # Used by tmux popup binding (prefix j)
 
-selected=$(find ~/code -mindepth 2 -maxdepth 2 -type d 2>/dev/null | \
+selected=$(find -L ~/code -mindepth 2 -maxdepth 2 -type d 2>/dev/null | \
   sed "s|$HOME/code/||" | \
   fzf --reverse --header "Jump to project")
 
