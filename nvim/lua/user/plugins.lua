@@ -15,7 +15,8 @@ require("lazy").setup({
     -- Colors
     -- { import = 'user.plugins.tokyonight' },
     -- { import = 'user.plugins.catppuccin' },
-    { import = 'user.plugins.nord' },
+    -- { import = 'user.plugins.nord' },
+    { import = 'user.plugins.base16' },
 
     -- Indent autodetection with editorconfig support
     { 'tpope/vim-sleuth' },
