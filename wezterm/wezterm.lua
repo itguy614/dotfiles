@@ -9,13 +9,10 @@ config.font_size = 10
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 500
 
--- Force X11 on Linux (Wayland has broken window decorations/snapping)
-config.enable_wayland = false
-
 -- Window
 config.window_padding = {
 	left = 10,
-	right = 10,
+	right = 20,
 	top = 10,
 	bottom = 10,
 }
@@ -32,6 +29,9 @@ config.enable_tab_bar = false
 
 -- Bell
 config.audible_bell = "Disabled"
+
+-- Use X11 instead of Wayland
+config.enable_wayland = false
 
 -- Color scheme
 config.color_scheme = "Google Dark (Gogh)"

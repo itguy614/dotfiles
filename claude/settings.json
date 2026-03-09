@@ -48,7 +48,7 @@
     ],
     "ask": []
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PostToolUse": [
       {
@@ -137,6 +137,5 @@
     "description": "Claude Code settings for [project name]",
     "lastModified": "2025-10-23",
     "author": "Kurt Wolf <kwolf@gohcl.com>"
-  },
-  "effortLevel": "high"
+  }
 }

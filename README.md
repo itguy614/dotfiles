@@ -9,7 +9,7 @@ This repository provides curated configurations for:
 - **Shell**: Zsh with Oh My Zsh, plugins, aliases, and custom theme
 - **Editors**: Neovim with Lazy.nvim plugin manager and extensive plugin ecosystem
 - **Version Control**: Git configuration with hooks and aliases
-- **Terminals**: Kitty, Ghostty, Hyper, Tmux configurations
+- **Terminals**: WezTerm, Kitty, Ghostty, Hyper, Tmux, Screen configurations
 - **Tools**: Claude Code, Vim, PHP/Laravel, ctags, EditorConfig
 - **Utilities**: Custom scripts (journal, task manager)
 
@@ -54,9 +54,11 @@ dotfiles/
 ├── git/                       # Git configuration (with OS-specific variants)
 ├── vim/                       # Vim configuration
 ├── tmux/                      # Tmux configuration
+├── wezterm/                   # WezTerm terminal configuration
 ├── kitty/                     # Kitty terminal configuration
 ├── ghostty/                   # Ghostty terminal configuration
 ├── hyper/                     # Hyper terminal configuration
+├── screen/                    # GNU Screen configuration
 ├── ctags/                     # Ctags configuration
 ├── editorconfig/              # EditorConfig settings
 ├── php/                       # PHP configuration
@@ -97,13 +99,13 @@ dotfiles/
 
 ### Claude Code
 
-- **Model**: Claude Haiku for speed and cost efficiency
-- **Permissions**: Configured for safety (read/write allowed, delete/sudo denied)
+- **Model**: Claude Sonnet
+- **Permissions**: Configured for safety (read/write allowed, sudo/deploy/publish denied)
 - **Hooks**: Auto-formatting, type checking, validation
-  - Prettier for JS/TS/JSON
+  - Prettier for JS
   - Black & flake8 for Python
   - TypeScript type checking
-  - JSON validation
+  - JSON validation with jq
 
 ## Customization
 
@@ -128,7 +130,7 @@ Edit files in `nvim/lua/user/`:
 
 Edit `claude/settings.json` to:
 
-- Change the AI model (haiku/sonnet/opus)
+- Change the AI model (haiku/sonnet/opus/etc.)
 - Modify permissions and hooks
 - Configure environment variables
 
@@ -170,7 +172,7 @@ Since configurations are symlinked, updates take effect immediately.
 
 - **Symlinks**: The install script creates symlinks. Edit configurations in the repository, not in `$HOME`.
 - **OS-Specific Config**: Git and Zsh configurations include platform-specific variants. The install script handles detection automatically.
-- **Security**: Claude Code settings prioritize security (e.g., .env files are protected, git push is denied).
+- **Security**: Claude Code settings prioritize security (e.g., sudo/deploy/publish commands are denied, production configs are write-protected).
 - **Hooks**: File edits trigger auto-formatting and validation via hooks defined in `claude/settings.json`.
 
 ## Troubleshooting
@@ -220,5 +222,6 @@ Personal dotfiles repository. Feel free to use as a reference or fork for your o
 - [Lazy.nvim](https://github.com/folke/lazy.nvim)
 - [Zsh Documentation](https://www.zsh.org/)
 - [Git Documentation](https://git-scm.com/doc)
+- [WezTerm](https://wezfurlong.org/wezterm/)
 - [Kitty Terminal](https://sw.kovidgoyal.net/kitty/)
 - [Ghostty Terminal](https://mitchellh.com/ghostty)
