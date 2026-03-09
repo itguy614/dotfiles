@@ -3,12 +3,14 @@ local config = wezterm.config_builder()
 
 -- Font
 config.font = wezterm.font("JetBrainsMono Nerd Font Mono")
-config.font_size = 12
-config.line_height = 1.75
+config.font_size = 10
 
 -- Cursor
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 500
+
+-- Force X11 on Linux (Wayland has broken window decorations/snapping)
+config.enable_wayland = false
 
 -- Window
 config.window_padding = {
@@ -32,6 +34,6 @@ config.enable_tab_bar = false
 config.audible_bell = "Disabled"
 
 -- Color scheme
-config.color_scheme = "Catppuccin Frappe"
+config.color_scheme = "Google Dark (Gogh)"
 
 return config
