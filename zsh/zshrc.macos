@@ -1,3 +1,6 @@
+# Homebrew PATH (must come before oh-my-zsh loads plugins like direnv/tmux)
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # macOS-specific plugins
 plugins+=(macos brew)
 

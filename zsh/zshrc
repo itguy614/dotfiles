@@ -195,14 +195,14 @@ _gitignoreio () {
 # GnuPG
 export GPGKEY=8060A02E
 
-# Tmux auto-attach and aliases
-[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
-
-# Source OS-specific configuration
+# Source OS-specific configuration (must come before tmux.zsh so Homebrew tools are in PATH)
 [[ -f ~/.zshrc.os ]] && source ~/.zshrc.os
 
 # Source local configuration if it exists
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# Tmux auto-attach and aliases
+[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
 
 # Source Oh My Zsh (must come after OS and local configs so plugins+= takes effect)
 source $ZSH/oh-my-zsh.sh
