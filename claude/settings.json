@@ -48,7 +48,6 @@
     ],
     "ask": []
   },
-  "model": "sonnet",
   "hooks": {
     "PostToolUse": [
       {
@@ -112,7 +111,11 @@
     "qa-tools@stat-ai": true,
     "web-developer-tools@stat-ai": true,
     "clangd-lsp@claude-plugins-official": true,
-    "embedded-developer-tools@stat-ai": true
+    "embedded-developer-tools@stat-ai": true,
+    "frontend-design@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {},
   "sandbox": {
@@ -137,5 +140,10 @@
     "description": "Claude Code settings for [project name]",
     "lastModified": "2025-10-23",
     "author": "Kurt Wolf <kwolf@gohcl.com>"
+  },
+  "awaySummaryEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
   }
 }
