@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="`echo $HOME`/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set a smart terminal
 export TERM=xterm-256color
@@ -11,12 +11,22 @@ ZSH_THEME="gallifrey"
 HYPHEN_INSENSITIVE="true"
 COMPLETION_WAITING_DOTS="true"
 HIST_STAMPS="yyyy-mm-dd"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt AUTO_CD
+
 VI_MODE_SET_CURSOR="true"
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE="true"
 
 export EDITOR=nvim
+export VISUAL=nvim
 
 plugins=(
+    fzf-tab
     colored-man-pages
     colorize
     common-aliases
@@ -29,14 +39,16 @@ plugins=(
     npm
     pip
     python
-    extract
     sudo
     tmux
     vi-mode
     vscode
     web-search
+    aws
     zsh-autosuggestions
- aws)
+    zsh-completions
+    zsh-history-substring-search
+    zsh-syntax-highlighting)
 
 export KEYTIMEOUT=15
 
@@ -49,7 +61,6 @@ path=(
 	/usr/local/sbin
 	$HOME/.composer/vendor/bin
 	$HOME/bin
-	./node_modules/.bin
     $path
 )
 
@@ -78,7 +89,7 @@ alias migrate="php artisan migrate"
 alias mfs="php artisan migrate:fresh --seed"
 
 alias mc="php artisan make:controller"
-alias mrc="php artisan mae:controller --resource"
+alias mrc="php artisan make:controller --resource"
 alias mm="php artisan make:migration"
 alias mmm="php artisan make:migration -m"
 
@@ -131,12 +142,12 @@ alias gsl="git stash list"
 alias gsp="git stash pop"
 alias gss="git stash save"
 alias gssh="git stash show -p"
-alias gst="git stach"
+alias gst="git stash"
 alias gt="git tag -l"
 alias gtd="git tag -d"
 alias gx="gitx --all"
 alias nah="git reset --hard; git clean -df;"
-alias wip="git add . && git commit -m "wip""
+alias wip='git add . && git commit -m "wip"'
 alias got="git "
 alias get="git "
 alias gtower="gittower git rev-parse --show-toplevel"
@@ -209,3 +220,46 @@ source $ZSH/oh-my-zsh.sh
 
 # Register completions (must come after oh-my-zsh.sh which provides compdef)
 compdef _gitignoreio gi
+
+# zsh-history-substring-search keybindings
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+
+# FZF Configuration
+if command -v fzf &>/dev/null; then
+    if command -v fd &>/dev/null; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+    fi
+
+    export FZF_DEFAULT_OPTS='
+      --height 40%
+      --layout=reverse
+      --border=rounded
+      --info=inline
+      --bind="ctrl-/:toggle-preview"
+      --color=fg:#cdd6f4,bg:#1e1e2e,hl:#f38ba8
+      --color=fg+:#cdd6f4,bg+:#313244,hl+:#f38ba8
+      --color=info:#cba6f7,prompt:#89b4fa,pointer:#f5c2e7
+      --color=marker:#a6e3a1,spinner:#f5c2e7,header:#94e2d5
+    '
+
+    if command -v bat &>/dev/null; then
+        export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=numbers --line-range=:50 {}" --preview-window=right:60%'
+    else
+        export FZF_CTRL_T_OPTS='--preview "cat {}" --preview-window=right:60%:wrap'
+    fi
+
+    export FZF_ALT_C_OPTS='--preview "ls -la --color {}"'
+    export FZF_CTRL_R_OPTS='--sort --exact'
+
+    [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+fi
+
+# fzf-tab configuration
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:*' switch-group ',' '.'
