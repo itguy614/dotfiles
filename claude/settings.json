@@ -46,8 +46,10 @@
       "Bash(:*deploy:*)",
       "Bash(:*publish:*)"
     ],
-    "ask": []
+    "ask": [],
+    "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PostToolUse": [
       {
@@ -103,21 +105,28 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
-    "shared-tools@stat-ai": false,
     "database-developer-tools@stat-ai": true,
     "developer-tools@stat-ai": true,
+    "embedded-developer-tools@stat-ai": true,
     "project-manager-tools@stat-ai": true,
     "qa-tools@stat-ai": true,
+    "shared-tools@stat-ai": true,
     "web-developer-tools@stat-ai": true,
-    "clangd-lsp@claude-plugins-official": true,
-    "embedded-developer-tools@stat-ai": true,
-    "frontend-design@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "stat-ai": {
+      "source": {
+        "source": "git",
+        "url": "git@bitbucket.org:gohcl/stat-ai.git"
+      }
+    }
+  },
   "sandbox": {
     "enabled": false,
     "autoAllowBashIfSandboxed": false,
@@ -128,6 +137,13 @@
   },
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
+  "effortLevel": "medium",
+  "awaySummaryEnabled": false,
+  "tui": "default",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "fileCheckpointingEnabled": false,
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",
@@ -140,10 +156,5 @@
     "description": "Claude Code settings for [project name]",
     "lastModified": "2025-10-23",
     "author": "Kurt Wolf <kwolf@gohcl.com>"
-  },
-  "awaySummaryEnabled": false,
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
   }
 }
