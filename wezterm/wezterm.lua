@@ -33,7 +33,35 @@ config.audible_bell = "Disabled"
 -- Use X11 instead of Wayland
 config.enable_wayland = false
 
--- Color scheme
-config.color_scheme = "Google Dark (Gogh)"
+-- Color scheme: Nord Light Brighter, matching ghostty/config
+config.colors = {
+  foreground = "#24292e",
+  background = "#ffffff",
+  cursor_bg = "#044289",
+  cursor_fg = "#ffffff",
+  cursor_border = "#044289",
+  selection_fg = "#24292e",
+  selection_bg = "#c2d9f5",
+  ansi = {
+    "#24292e", -- black
+    "#a74047", -- red
+    "#50750e", -- green
+    "#e36209", -- yellow
+    "#1155a3", -- blue
+    "#6f42c1", -- magenta
+    "#2f6f9f", -- cyan
+    "#d6d6d6", -- white
+  },
+  brights = {
+    "#8995a0", -- bright black
+    "#d73a49", -- bright red
+    "#22863a", -- bright green
+    "#cd9731", -- bright yellow
+    "#005cc5", -- bright blue
+    "#7653c1", -- bright magenta
+    "#4f9fcf", -- bright cyan
+    "#ebebeb", -- bright white
+  },
+}
 
 return config

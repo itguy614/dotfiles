@@ -46,6 +46,7 @@ vim.opt.shortmess:append({ I = true }) -- disable the splash screen
 vim.opt.completeopt = 'menuone,longest,preview'
 vim.opt.signcolumn = 'yes:2'
 vim.opt.showmode = false
+vim.opt.showtabline = 0 -- no tab bar; buffers are switched via telescope
 vim.opt.updatetime = 4001 -- Set updatime to 1ms longer than the default to prevent polyglot from changing it
 vim.opt.redrawtime = 10000 -- Allow more time for loading syntax on large files
 vim.opt.exrc = true

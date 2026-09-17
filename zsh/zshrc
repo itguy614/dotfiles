@@ -241,10 +241,11 @@ if command -v fzf &>/dev/null; then
       --border=rounded
       --info=inline
       --bind="ctrl-/:toggle-preview"
-      --color=fg:#cdd6f4,bg:#1e1e2e,hl:#f38ba8
-      --color=fg+:#cdd6f4,bg+:#313244,hl+:#f38ba8
-      --color=info:#cba6f7,prompt:#89b4fa,pointer:#f5c2e7
-      --color=marker:#a6e3a1,spinner:#f5c2e7,header:#94e2d5
+      --color=fg:#474b4f,bg:#ffffff,hl:#1155a3
+      --color=fg+:#24292e,bg+:#ebebeb,hl+:#1155a3
+      --color=info:#8995a0,prompt:#0d5c43,pointer:#a74047
+      --color=marker:#50750e,spinner:#0d5c43,header:#2f6f9f
+      --color=border:#d6d6d6,gutter:#ffffff
     '
 
     if command -v bat &>/dev/null; then
