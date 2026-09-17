@@ -191,6 +191,9 @@ if [ -d "$HOME/.pyenv" ]; then
     eval "$(pyenv init -)"
 fi
 
+# Rust
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+
 # GitIgnore
 function gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;}
 
@@ -264,3 +267,7 @@ fi
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:*' switch-group ',' '.'
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84/"
