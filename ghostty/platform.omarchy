@@ -16,7 +16,7 @@ async-backend = epoll
 
 # Cursor styling + SSH session terminfo
 # (all shell integration options must be passed together)
-shell-integration-features = no-cursor,ssh-env
+shell-integration-features = no-cursor,ssh-terminfo,ssh-env
 
 # Send Shift+Enter as CSI-u so TUIs can tell it apart from Enter, and
 # Alt+Shift+Enter likewise so tmux can match M-S-Enter.

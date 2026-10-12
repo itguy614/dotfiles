@@ -29,4 +29,10 @@ scrollback-limit = 10000
 
 keybind = shift+enter=text:\x1b\r
 
+# Remote hosts rarely ship the xterm-ghostty terminfo, and ssh refuses with
+# "missing or unsuitable terminal". ssh-terminfo installs it on the host the
+# first time we connect; ssh-env falls back to TERM=xterm-256color where that
+# fails. Platform files that set this key must repeat both flags.
+shell-integration-features = ssh-terminfo,ssh-env
+
 config-file = ?"~/.config/ghostty/platform.conf"
