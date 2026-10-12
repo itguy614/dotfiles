@@ -113,7 +113,7 @@ link_all() {
 
 	# Editors and tooling
 	link "$DOTFILES/ctags/ctags"                "$HOME/.ctags"
-	link "$DOTFILES/editorconfig/editorconfig"  "$HOME/.editorconfig"
+	link "$DOTFILES/editorconfig/.editorconfig" "$HOME/.editorconfig"
 	link "$DOTFILES/php/php_cs"                 "$HOME/.php_cs"
 	link "$DOTFILES/vim/vimrc"                  "$HOME/.vimrc"
 	link "$DOTFILES/vim/plugins.vim"            "$HOME/.vim/plugins.vim"
