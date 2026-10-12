@@ -1,0 +1,41 @@
+# Omarchy variant of the tmux theme.
+#
+# Omarchy has no tmux file in its theme payload -- it themes tmux through the
+# terminal's ANSI palette instead. So everything here is named colours rather
+# than hex, which is what makes `omarchy-theme-set` reach the status line.
+
+setw -g clock-mode-colour blue
+setw -g mode-style 'fg=black bg=blue bold'
+
+# One flat divider, matching both styles so the active pane does not split it
+# into two colours.
+set -g pane-border-style 'fg=brightblack'
+set -g pane-active-border-style 'fg=brightblack'
+
+# Unfocused panes are not dimmed here: with a terminal-driven palette we
+# cannot know whether the theme is light or dark.
+set -g window-style 'default'
+set -g window-active-style 'default'
+
+set -g status-position bottom
+set -g status-justify left
+set -g status-style 'bg=default,fg=default'
+
+set -g status-left-style 'fg=green bold'
+set -g status-left ' #h:#S '
+set -g status-left-length 100
+
+set -g status-right-style 'fg=brightblack'
+set -g status-right ' #{?mouse,#[fg=green]M,#[fg=red]M}#[fg=brightblack] %Y-%m-%d %H:%M '
+set -g status-right-length 50
+
+setw -g window-status-current-style 'fg=blue bold'
+setw -g window-status-current-format ' #I:#W '
+
+setw -g window-status-style 'fg=brightblack'
+setw -g window-status-format ' #I:#W '
+
+setw -g window-status-bell-style 'fg=yellow bold'
+setw -g window-status-separator ""
+
+set -g message-style 'fg=black bg=yellow'

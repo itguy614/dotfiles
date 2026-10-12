@@ -1,0 +1,23 @@
+# Nord Light Brighter (huytd/vim-nord-light-brighter)
+background = #ffffff
+foreground = #24292e
+cursor-color = #044289
+cursor-text = #ffffff
+selection-background = #c2d9f5
+selection-foreground = #24292e
+palette = 0=#24292e
+palette = 1=#a74047
+palette = 2=#50750e
+palette = 3=#e36209
+palette = 4=#1155a3
+palette = 5=#6f42c1
+palette = 6=#2f6f9f
+palette = 7=#d6d6d6
+palette = 8=#8995a0
+palette = 9=#d73a49
+palette = 10=#22863a
+palette = 11=#cd9731
+palette = 12=#005cc5
+palette = 13=#7653c1
+palette = 14=#4f9fcf
+palette = 15=#ebebeb

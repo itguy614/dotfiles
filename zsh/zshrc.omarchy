@@ -1,0 +1,58 @@
+# Omarchy platform layer.
+#
+# Omarchy ships its shell config as bash by default; `omarchy-zsh` is the
+# officially packaged zsh port of the same thing. We source it directly rather
+# than running `omarchy-setup-zsh`, because that command regenerates ~/.zshrc
+# from its own template and would clobber the symlink this repo installs.
+
+OMARCHY_ZSH_SHELL="${OMARCHY_ZSH_SHELL:-/usr/share/omarchy-zsh/shell}"
+
+# Runs after oh-my-zsh (see zsh/zshrc). Ordering matters: oh-my-zsh resets
+# PROMPT and defines its own git aliases, so the Omarchy layer has to land
+# after it to survive.
+platform_post_omz() {
+	if [[ ! -d "$OMARCHY_ZSH_SHELL" ]]; then
+		print -u2 "dotfiles: omarchy-zsh not found at $OMARCHY_ZSH_SHELL (pacman -S omarchy-zsh)"
+		return
+	fi
+
+	# Oh My Zsh's git plugin aliases `ga` and `gd`, and omarchy-zsh defines
+	# functions by those same names (git-worktree helpers). zsh refuses to
+	# define a function over an existing alias, and the parse error aborts the
+	# rest of the file -- so clear the way first. Our own shell/aliases.sh is
+	# sourced after this and takes `ga`/`gd` back, which is what we want; the
+	# point here is that omarchy's *other* helpers survive.
+	local -a omarchy_names
+	omarchy_names=(${(f)"$(grep -hoE '^[a-zA-Z0-9_-]+\(\)' \
+		$OMARCHY_ZSH_SHELL/fns/*(N) $OMARCHY_ZSH_SHELL/aliases(N) 2>/dev/null \
+		| tr -d '()' | sort -u)"})
+	(( $#omarchy_names )) && unalias $omarchy_names 2>/dev/null
+
+	# zoptions then all -- the order omarchy-zsh's own templates/zshrc uses.
+	# `all` is upstream's entry point (envs, aliases, functions, inits), so
+	# anything they add to it comes along on the next package update.
+	[[ -r "$OMARCHY_ZSH_SHELL/zoptions" ]] && source "$OMARCHY_ZSH_SHELL/zoptions"
+
+	if [[ -r "$OMARCHY_ZSH_SHELL/all" ]]; then
+		source "$OMARCHY_ZSH_SHELL/all"
+	else
+		local part
+		for part in envs aliases functions inits; do
+			[[ -r "$OMARCHY_ZSH_SHELL/$part" ]] && source "$OMARCHY_ZSH_SHELL/$part"
+		done
+	fi
+
+	#----------------------------------------------------------------------
+	# Collision resolution
+	#----------------------------------------------------------------------
+	# Everything in shell/aliases.sh is sourced after this function and wins
+	# its own collisions automatically (c, g, gcm, ...). Handled here are the
+	# cases where we want Omarchy's alias *gone* rather than replaced.
+
+	# Omarchy aliases `t` to a plain tmux attach, which shadows our fzf
+	# project switcher at ~/.local/bin/t.
+	unalias t 2>/dev/null
+}
+
+# Omarchy standardises on mise for node/python/ruby, so nvm and pyenv stay off
+# here. `mise activate zsh` is run by the omarchy-zsh `inits` file above.

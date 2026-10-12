@@ -9,6 +9,18 @@ This is a **dotfiles repository** containing configuration files for development
 ## Repository Structure
 
 - **`install`** - Main installation script that symlinks all dotfiles to `$HOME`
+  - Flags: `--skip-deps` (link only), `--deps-only`, `--force` (back up and replace non-symlinks)
+  - Never deletes a real file; it reports and skips unless `--force` is passed
+- **`lib/platform.sh`** - Platform detection shared by `install`, scripts, and shell rc files
+  - `dotfiles_platform_chain` emits e.g. `omarchy arch linux`, `ubuntu debian linux`, `macos`
+  - `dotfiles_variant <dir> <base>` resolves the most specific `<base>.<platform>` file
+- **`shell/`** - Shell-agnostic configuration, sourced by zsh (and any future bash rc)
+  - `env.sh` - `PATH` helpers, `EDITOR`, exported environment
+  - `aliases.sh` - every alias (git, Laravel, composer, navigation)
+  - `functions.sh` - `db`, `gi`, and friends
+- **`starship/`** - Prompt config, linked on every platform including Omarchy
+  - Uses ANSI colour names, not hex, so the prompt follows the terminal palette (this is what makes it track `omarchy-theme-set` — nothing themes the file itself)
+- **`omarchy/`** - Omarchy desktop overrides (`hypr/`); only files diverging from `/etc/skel`
 - **`claude/`** - Claude Code settings and configuration
   - `settings.json` - Primary Claude Code settings (permissions, hooks, model, etc.)
   - `settings.md` - Documentation for settings.json options
@@ -18,10 +30,10 @@ This is a **dotfiles repository** containing configuration files for development
   - `lua/user/options.lua` - Neovim options and settings
   - `lua/user/keymaps.lua` - Key bindings
   - `lua/user/plugins/` - Individual plugin configurations
-- **`zsh/`** - Zsh shell configuration
-  - `zshrc` - Main shell config (theme, plugins, environment setup)
-  - `aliases` - Command aliases (git, PHP, Laravel, development shortcuts)
-  - `paths` - PATH configuration
+- **`zsh/`** - Zsh-specific configuration
+  - `zshrc` - Main shell config (options, plugins, load order, keybindings)
+  - `zshrc.omarchy` / `zshrc.linux` / `zshrc.macos` - Per-platform layers, linked to `~/.zshrc.os`
+  - `tmux` - Tmux auto-attach and session helpers, linked to `~/.tmux.zsh`
 - **`git/`** - Git configuration
   - `gitconfig` - Main git config
   - `gitconfig.linux` / `gitconfig.macos` - OS-specific overrides
@@ -39,22 +51,36 @@ This is a **dotfiles repository** containing configuration files for development
 ```
 
 The script:
-1. Creates necessary directories (`~/.config`, `~/.local/bin`, `~/.vim`)
-2. Symlinks all dotfiles to appropriate `$HOME` locations
-3. Installs dependencies (Oh My Zsh, Vundle for Vim, zsh plugins)
-4. Sets up OS-specific git config based on platform (Linux/macOS/Windows)
+1. Resolves the platform chain via `lib/platform.sh`
+2. Creates necessary directories (`~/.config`, `~/.local/bin`, `~/.vim`)
+3. Symlinks all dotfiles to appropriate `$HOME` locations, skipping (not deleting) any real file it did not create
+4. Links the most specific per-platform variant of each config
+5. Installs dependencies (Oh My Zsh, its plugins, Vundle, and native packages on Arch)
 
-### OS Detection
-The install script detects the operating system and symlinks the appropriate git config:
-- Linux → `git/gitconfig.linux`
-- macOS → `git/gitconfig.macos`
-- Windows/MSYS → `git/gitconfig.windows`
+Fonts install separately via `scripts/install-nerd-fonts`, which dispatches on
+the same platform chain (brew casks / the `nerd-fonts` pacman group / GitHub
+release tarballs).
+
+### Platform Detection
+`lib/platform.sh` reads `/etc/os-release` and builds an ordered chain, most
+specific first. `install` links the first `<name>.<platform>` variant that
+exists along that chain, falling back to `<name>.default`:
+
+| System | Chain | `~/.zshrc.os` resolves to |
+| ------ | ----- | ------------------------- |
+| Omarchy | `omarchy arch linux` | `zsh/zshrc.omarchy` |
+| Arch | `arch linux` | `zsh/zshrc.linux` |
+| Ubuntu | `ubuntu debian linux` | `zsh/zshrc.linux` |
+| macOS | `macos` | `zsh/zshrc.macos` |
+
+The same mechanism drives `~/.gitconfig.os`, `~/.tmux.theme.conf`, and
+`~/.config/ghostty/platform.conf`.
 
 ## Key Development Tools & Commands
 
 ### Claude Code Settings
 Located in `claude/settings.json`. Key configurations:
-- **Model**: `haiku` (Claude Haiku 3.5 for speed/cost)
+- **Model**: set in `claude/settings.json` (currently `opus[1m]`)
 - **Permissions**: Allows file read/write, git operations, npm/yarn, web fetching
 - **Denied**: `.env` files, `node_modules/`, `build/` dirs, `rm/sudo/curl/wget` commands, git push
 - **Hooks**: 
@@ -124,7 +150,9 @@ Edit `claude/settings.json` to:
 See `claude/settings.md` for detailed documentation.
 
 ### Update Shell Aliases
-Edit `zsh/aliases` and reload with: `source ~/.aliases`
+Edit `shell/aliases.sh` (shell-agnostic) and reload with `exec zsh`.
+Zsh-only behaviour — `setopt`, `bindkey`, `zstyle`, the `plugins` array —
+belongs in `zsh/zshrc` instead.
 
 ### Update Neovim Config
 Edit files in `nvim/lua/user/`:
@@ -138,6 +166,9 @@ Plugins use Lazy.nvim - see `nvim/lazy-lock.json` for current versions.
 ## Important Conventions
 
 - **Symlinks Only**: The install script uses symlinks, not copies. Edit files in the dotfiles repo directly; changes reflect immediately in `$HOME`
+- **Never `rm -rf` a target in `install`**: use the `link` helper, which refuses to destroy files it did not create. Omarchy ships real configs at `~/.config/ghostty` and `~/.config/hypr`
+- **Shell load order**: Oh My Zsh → platform layer (`~/.zshrc.os`) → `shell/*.sh`. The last one wins collisions, which is how this repo's aliases beat Omarchy's
+- **Omarchy**: never run `omarchy-setup-zsh` — it regenerates `~/.zshrc` from its own template and replaces our symlink. Omarchy owns theming; configs follow `~/.local/state/omarchy/current/theme/`
 - **OS-Specific Config**: Git and zsh configs include OS-specific variants (check for `.linux`/`.macos` suffixes)
 - **Ignored Files**: `nvim/lazy-lock.json` and `*.bak` are gitignored (see `.gitignore`)
 - **Hooks Override**: Claude Code settings in this repo prioritize security over convenience (e.g., denying .env reads)

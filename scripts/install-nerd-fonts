@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+#
+# Install the Nerd Fonts, using whatever the platform packages natively.
+#
+#   macOS          Homebrew casks
+#   Arch/Omarchy   the `nerd-fonts` pacman group (72 packages)
+#   everything else GitHub release tarballs into ~/.local/share/fonts
+#
+# Usage: install-nerd-fonts [--list]
+
+set -uo pipefail
+
+# Resolve through the symlink in ~/.local/bin back to the repo.
+SELF=$(readlink -f "${BASH_SOURCE[0]}")
+DOTFILES=$(cd "$(dirname "$SELF")/.." && pwd)
+source "$DOTFILES/lib/platform.sh"
+
+PLATFORM_CHAIN=$(dotfiles_platform_chain)
+
+info() { printf '  %s\n' "$*"; }
+warn() { printf '  ! %s\n' "$*" >&2; }
+
+if [ "${1:-}" = "--list" ]; then
+	echo "platform chain: $PLATFORM_CHAIN"
+	exit 0
+fi
+
+#--------------------------------------------------------------------------
+# macOS — Homebrew casks
+#--------------------------------------------------------------------------
+fonts_macos() {
+	command -v brew >/dev/null || { warn "Homebrew not installed"; return 1; }
+
+	brew search '/font-.*-(nerd-font|nf)/' \
+		| awk '{print $1}' \
+		| sort -u \
+		| while read -r font; do
+			if brew list --cask "$font" >/dev/null 2>&1; then
+				info "already installed: $font"
+				continue
+			fi
+			info "installing: $font"
+			brew install --cask "$font" || warn "failed: $font — skipping"
+		done
+}
+
+#--------------------------------------------------------------------------
+# Arch / Omarchy — the nerd-fonts package group
+#--------------------------------------------------------------------------
+fonts_arch() {
+	local count
+	count=$(pacman -Sg nerd-fonts 2>/dev/null | wc -l)
+
+	if [ "$count" -eq 0 ]; then
+		warn "nerd-fonts group not found in the configured repos"
+		return 1
+	fi
+
+	info "installing the nerd-fonts group ($count packages)"
+	sudo pacman -S --needed --noconfirm nerd-fonts
+}
+
+#--------------------------------------------------------------------------
+# Other Linux — GitHub release tarballs
+#--------------------------------------------------------------------------
+# Neither Debian nor Fedora packages the Nerd Fonts, so pull the official
+# release archives into the user font directory.
+fonts_github() {
+	local font_dir="$HOME/.local/share/fonts/NerdFonts"
+	local repo="ryanoasis/nerd-fonts"
+	local temp_dir
+	temp_dir=$(mktemp -d)
+	trap 'rm -rf "$temp_dir"' RETURN
+
+	mkdir -p "$font_dir"
+
+	info "fetching latest Nerd Fonts release..."
+	local latest
+	latest=$(curl -sI "https://github.com/$repo/releases/latest" \
+		| grep -i '^location:' | sed 's/.*tag\///' | tr -d '\r')
+
+	if [ -z "$latest" ]; then
+		warn "could not determine the latest release"
+		return 1
+	fi
+	info "latest release: $latest"
+
+	curl -s "https://api.github.com/repos/$repo/releases/tags/$latest" \
+		| grep '"name":' \
+		| grep '\.tar\.xz' \
+		| sed 's/.*"name": "//;s/".*//' \
+		| while read -r archive; do
+			local font_name="${archive%.tar.xz}"
+
+			if [ -d "$font_dir/$font_name" ] && [ -n "$(ls -A "$font_dir/$font_name" 2>/dev/null)" ]; then
+				info "already installed: $font_name"
+				continue
+			fi
+
+			info "installing: $font_name"
+			if curl -sL "https://github.com/$repo/releases/download/$latest/$archive" -o "$temp_dir/$archive"; then
+				mkdir -p "$font_dir/$font_name"
+				tar -xf "$temp_dir/$archive" -C "$font_dir/$font_name"
+				rm -f "$temp_dir/$archive"
+			else
+				warn "failed to download $font_name — skipping"
+			fi
+		done
+
+	info "refreshing font cache..."
+	fc-cache -f "$font_dir"
+	info "installed to $font_dir"
+}
+
+#--------------------------------------------------------------------------
+
+printf '==> Nerd Fonts (%s)\n' "${PLATFORM_CHAIN%% *}"
+
+case " $PLATFORM_CHAIN " in
+	*" macos "*) fonts_macos ;;
+	*" arch "*)  fonts_arch ;;
+	*" linux "*) fonts_github ;;
+	*) warn "unsupported platform: $PLATFORM_CHAIN"; exit 1 ;;
+esac
+
+printf '\nDone.\n'

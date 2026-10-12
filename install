@@ -1,148 +1,321 @@
 #!/usr/bin/env bash
+#
+# Symlink this repo into $HOME and install the per-platform dependencies.
+#
+#   ./install                 link configs, then install dependencies
+#   ./install --skip-deps     link configs only (no sudo, no network)
+#   ./install --force         back up and replace files we did not create
+#   ./install --deps-only     install dependencies without touching symlinks
 
-# Calculate the dotfile location
-DOTFILES=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+set -uo pipefail
 
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+DOTFILES=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$DOTFILES/lib/platform.sh"
 
-# Create any missing directories
-mkdir -p $HOME/.config
-mkdir -p $HOME/.local/bin
-mkdir -p $HOME/.vim
+PLATFORM_CHAIN=$(dotfiles_platform_chain)
+PLATFORM=${PLATFORM_CHAIN%% *}
+STAMP=$(date +%Y%m%d%H%M%S)
 
-# Kitty Configuration (Terminal)
-rm -rf $HOME/.config/kitty
-ln -s $DOTFILES/kitty $HOME/.config/kitty
+FORCE=0
+SKIP_DEPS=0
+DEPS_ONLY=0
+SKIPPED=()
 
-# Claude Code Configuration
-rm -rf $HOME/.claude/settings.json
-ln -s $DOTFILES/claude/settings.json $HOME/.claude/settings.json
+for arg in "$@"; do
+	case "$arg" in
+		--force) FORCE=1 ;;
+		--skip-deps) SKIP_DEPS=1 ;;
+		--deps-only) DEPS_ONLY=1 ;;
+		-h|--help) sed -n '2,10p' "$0" | sed 's/^#//'; exit 0 ;;
+		*) echo "unknown option: $arg" >&2; exit 1 ;;
+	esac
+done
 
-rm -rf $HOME/.claude/statusline-command.sh
-ln -s $DOTFILES/claude/statusline-command.sh $HOME/.claude/statusline-command.sh
-
-# Ghostty Configuration (Terminal)
-rm -rf $HOME/.config/ghostty
-ln -s $DOTFILES/ghostty $HOME/.config/ghostty
-
-# WezTerm Configuration (Terminal)
-rm -rf $HOME/.config/wezterm
-mkdir -p $HOME/.config/wezterm
-ln -sf $DOTFILES/wezterm/wezterm.lua $HOME/.config/wezterm/wezterm.lua
-
-# Hyper Configuration (Terminal)
-rm -rf $HOME/.hyper.js
-ln -s $DOTFILES/hyper/hyper.js $HOME/.hyper.js
-
-# Tmux Configuration
-rm -rf $HOME/.tmux.conf
-ln -s $DOTFILES/tmux/tmux.conf $HOME/.tmux.conf
-
-rm -rf $HOME/.local/bin/t
-ln -s $DOTFILES/scripts/t $HOME/.local/bin/t
-
-rm -rf $HOME/.local/bin/tmux-project-jump
-ln -s $DOTFILES/scripts/tmux-project-jump $HOME/.local/bin/tmux-project-jump
-
-rm -rf $HOME/.local/bin/tmux-session-switch
-ln -s $DOTFILES/scripts/tmux-session-switch $HOME/.local/bin/tmux-session-switch
-
-# Screen Configuration
-rm -rf $HOME/.screenrc
-ln -s $DOTFILES/screen/screenrc $HOME/.screenrc
-
-# GIT Configuration
-rm -rf $HOME/.gitignore
-ln -s $DOTFILES/git/gitignore $HOME/.gitignore
-
-rm -rf $HOME/.gitconfig
-ln -s $DOTFILES/git/gitconfig $HOME/.gitconfig
-
-rm -Rf $HOME/.git_template
-ln -s $DOTFILES/git/git_template $HOME/.git_template
-
-rm -rf $HOME/.gitconfig.os
-case "`uname -s`" in
-	Linux*)	os=linux;;
-	Darwin*) os=macos;;
-	CYGWIN*) os=windows;;
-	MINGW*) os=windows;;
-	MSYS_NT*) os=macos;;
-	*) os=default;;
-esac
-ln -s $DOTFILES/git/gitconfig.$os $HOME/.gitconfig.os
-
-# ctags Configuration
-rm -rf $HOME/.ctags
-ln -s $DOTFILES/ctags/ctags $HOME/.ctags
-
-# Editorconfig Configuration
-rm -rf $HOME/.editorconfig
-ln -s $DOTFILES/editorconfig/editorconfig $HOME/.editorconfig
-
-# PHP Configuration
-rm -rf $HOME/.php_cs
-ln -s $DOTFILES/php/php_cs $HOME/.php_cs
-
-# VIM Configuration
-rm -rf $HOME/.vimrc
-ln -s $DOTFILES/vim/vimrc $HOME/.vimrc
-
-rm -rf $HOME/.vim/plugins.vim
-ln -s $DOTFILES/vim/plugins.vim $HOME/.vim/plugins.vim
-
-if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
-	git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
-fi
-
-rm -Rf $HOME/.config/nvim
-ln -s $DOTFILES/nvim $HOME/.config/nvim
-
-# Zsh Configuration
-rm -rf $HOME/.zshrc
-ln -s $DOTFILES/zsh/zshrc $HOME/.zshrc
-
-rm -rf $HOME/.zshrc.os
-ln -s $DOTFILES/zsh/zshrc.$os $HOME/.zshrc.os
-
-rm -rf $HOME/.tmux.zsh
-ln -s $DOTFILES/zsh/tmux $HOME/.tmux.zsh
-
-# Oh My Zsh
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/fzf-tab" ]; then
-	git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-	git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-history-substring-search" ]; then
-	git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
-fi
-
-if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" ]; then
-	git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions
-fi
-
-# Journal
-rm -rf $HOME/.local/bin/journal
-ln -s $DOTFILES/scripts/journal $HOME/.local/bin/journal
-
-rm -rf $HOME/.local/bin/j
-ln -s $HOME/.local/bin/journal $HOME/.local/bin/j
+info() { printf '  %s\n' "$*"; }
+warn() { printf '  ! %s\n' "$*" >&2; }
+section() { printf '\n==> %s\n' "$*"; }
 
 #--------------------------------------------------------------------------
-# Cleanup - Remove deprecated symlinks
+# Linking
 #--------------------------------------------------------------------------
-rm -f $HOME/.aliases
-rm -f $HOME/.paths
-rm -f $HOME/.claude/statusline.sh
+
+# link <source> <dest>
+#
+# Replaces symlinks freely, but never silently destroys a real file or
+# directory. That guard is the whole point: Omarchy ships real configs at
+# ~/.config/ghostty and friends, and the old `rm -rf` here ate them.
+link() {
+	local src=$1 dest=$2
+
+	if [ ! -e "$src" ]; then
+		warn "missing source, skipped: ${src#$DOTFILES/}"
+		return 1
+	fi
+
+	mkdir -p "$(dirname "$dest")"
+
+	if [ -L "$dest" ]; then
+		[ "$(readlink "$dest")" = "$src" ] && return 0
+		rm -f "$dest"
+	elif [ -e "$dest" ]; then
+		if [ "$FORCE" = 1 ]; then
+			mv "$dest" "$dest.backup-$STAMP"
+			info "backed up $(basename "$dest") -> $(basename "$dest").backup-$STAMP"
+		else
+			SKIPPED+=("$dest")
+			return 1
+		fi
+	fi
+
+	ln -s "$src" "$dest"
+}
+
+# link_variant <dir> <basename> <dest> — links the most specific
+# "<basename>.<platform>" file found along the platform chain.
+link_variant() {
+	local resolved
+	if resolved=$(dotfiles_variant "$1" "$2"); then
+		link "$resolved" "$3" && info "$(basename "$3") -> $(basename "$resolved")"
+	else
+		warn "no $2.<platform> variant for: $PLATFORM_CHAIN"
+	fi
+}
+
+link_all() {
+	section "Linking configs for: $PLATFORM_CHAIN"
+
+	mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.vim" "$HOME/.claude"
+
+	# Terminals
+	link "$DOTFILES/kitty"              "$HOME/.config/kitty"
+	link "$DOTFILES/wezterm/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
+	link "$DOTFILES/hyper/hyper.js"     "$HOME/.hyper.js"
+
+	# Ghostty is linked file by file rather than as a directory: the config
+	# includes platform.conf, and that one differs per machine.
+	link "$DOTFILES/ghostty/config"     "$HOME/.config/ghostty/config"
+	link_variant "$DOTFILES/ghostty" platform "$HOME/.config/ghostty/platform.conf"
+
+	# Multiplexers
+	link "$DOTFILES/tmux/tmux.conf"     "$HOME/.tmux.conf"
+	link_variant "$DOTFILES/tmux" theme "$HOME/.tmux.theme.conf"
+	link "$DOTFILES/screen/screenrc"    "$HOME/.screenrc"
+
+	# Claude Code
+	link "$DOTFILES/claude/settings.json"        "$HOME/.claude/settings.json"
+	link "$DOTFILES/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+
+	# Git
+	link "$DOTFILES/git/gitignore"      "$HOME/.gitignore"
+	link "$DOTFILES/git/gitconfig"      "$HOME/.gitconfig"
+	link "$DOTFILES/git/git_template"   "$HOME/.git_template"
+	link_variant "$DOTFILES/git" gitconfig "$HOME/.gitconfig.os"
+
+	# Editors and tooling
+	link "$DOTFILES/ctags/ctags"                "$HOME/.ctags"
+	link "$DOTFILES/editorconfig/editorconfig"  "$HOME/.editorconfig"
+	link "$DOTFILES/php/php_cs"                 "$HOME/.php_cs"
+	link "$DOTFILES/vim/vimrc"                  "$HOME/.vimrc"
+	link "$DOTFILES/vim/plugins.vim"            "$HOME/.vim/plugins.vim"
+	link "$DOTFILES/nvim"                       "$HOME/.config/nvim"
+
+	# Zsh
+	link "$DOTFILES/zsh/zshrc"          "$HOME/.zshrc"
+	link "$DOTFILES/zsh/tmux"           "$HOME/.tmux.zsh"
+	link_variant "$DOTFILES/zsh" zshrc  "$HOME/.zshrc.os"
+
+	# Starship owns the prompt everywhere, including Omarchy: nothing in the
+	# distro rewrites starship.toml (it is shipped once via /etc/skel, and
+	# major-version upgrades skip files whose checksum shows local edits). The
+	# ANSI colour names in the config are what make it follow the theme.
+	link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
+
+	# Scripts
+	link "$DOTFILES/scripts/t"                  "$HOME/.local/bin/t"
+	link "$DOTFILES/scripts/journal"            "$HOME/.local/bin/journal"
+	link "$DOTFILES/scripts/tmux-project-jump"  "$HOME/.local/bin/tmux-project-jump"
+	link "$DOTFILES/scripts/tmux-session-switch" "$HOME/.local/bin/tmux-session-switch"
+	link "$DOTFILES/scripts/install-nerd-fonts" "$HOME/.local/bin/install-nerd-fonts"
+	link "$HOME/.local/bin/journal"             "$HOME/.local/bin/j"
+
+	if dotfiles_platform_is omarchy; then
+		link_omarchy
+	fi
+
+	cleanup
+}
+
+# Omarchy keeps its Hyprland config in ~/.config/hypr, seeded from /etc/skel.
+# We track only the files we have actually diverged on; monitors.lua stays
+# untracked on purpose because output names and scale are per-machine.
+link_omarchy() {
+	section "Linking Omarchy desktop overrides"
+
+	local f
+	for f in "$DOTFILES/omarchy/hypr/"*; do
+		[ -e "$f" ] || continue
+		link "$f" "$HOME/.config/hypr/$(basename "$f")" \
+			&& info "hypr/$(basename "$f")"
+	done
+
+	# tmux reads ~/.tmux.conf, but omarchy-refresh-tmux rewrites
+	# ~/.config/tmux/tmux.conf. Leaving both on disk means the next refresh
+	# quietly reintroduces Omarchy's config alongside ours.
+	if [ -f "$HOME/.config/tmux/tmux.conf" ] && [ ! -L "$HOME/.config/tmux/tmux.conf" ]; then
+		mv "$HOME/.config/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf.backup-$STAMP"
+		info "moved Omarchy's tmux.conf aside (~/.tmux.conf now wins)"
+	fi
+}
+
+cleanup() {
+	# Deprecated symlinks from earlier layouts
+	rm -f "$HOME/.aliases" "$HOME/.paths" "$HOME/.claude/statusline.sh"
+}
+
+#--------------------------------------------------------------------------
+# Dependencies
+#--------------------------------------------------------------------------
+
+install_deps() {
+	section "Installing dependencies for: $PLATFORM"
+
+	# Oh My Zsh is the framework zsh/zshrc is built on (vi-mode, extract,
+	# colored-man-pages...), so it and its plugins install the same way
+	# everywhere. Only the native tooling differs per platform.
+	case " $PLATFORM_CHAIN " in
+		*" arch "*) deps_arch ;;
+		*)          deps_check_tools ;;
+	esac
+
+	deps_oh_my_zsh
+}
+
+# Arch packages everything we need, and Omarchy publishes omarchy-zsh --
+# the maintained zsh port of its bash shell layer.
+deps_arch() {
+	local pkgs=(zsh starship fzf fd bat)
+
+	dotfiles_platform_is omarchy && pkgs+=(omarchy-zsh)
+
+	local missing=()
+	local pkg
+	for pkg in "${pkgs[@]}"; do
+		pacman -Qq "$pkg" &>/dev/null || missing+=("$pkg")
+	done
+
+	if [ ${#missing[@]} -eq 0 ]; then
+		info "all packages present"
+		return 0
+	fi
+
+	info "sudo pacman -S --needed ${missing[*]}"
+	sudo pacman -S --needed --noconfirm "${missing[@]}" || warn "pacman step failed"
+
+	# NB: deliberately not running omarchy-setup-zsh -- it regenerates
+	# ~/.zshrc from its own template and would replace our symlink.
+}
+
+# Debian, Fedora and macOS package these under inconsistent names (fd-find,
+# batcat, ...), so report rather than guess.
+deps_check_tools() {
+	local tool missing=()
+	for tool in zsh starship fzf fd bat nvim; do
+		command -v "$tool" &>/dev/null || missing+=("$tool")
+	done
+
+	if [ ${#missing[@]} -gt 0 ]; then
+		warn "not installed: ${missing[*]}"
+		warn "install these with your package manager for the full setup"
+	fi
+}
+
+deps_oh_my_zsh() {
+	if [ ! -d "$HOME/.oh-my-zsh" ]; then
+		info "installing Oh My Zsh"
+		KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	fi
+
+	local custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+	local repo
+	for repo in \
+		zsh-users/zsh-autosuggestions \
+		zsh-users/zsh-syntax-highlighting \
+		zsh-users/zsh-history-substring-search \
+		zsh-users/zsh-completions \
+		Aloxaf/fzf-tab
+	do
+		clone_plugin "https://github.com/$repo" "$custom/plugins/$(basename "$repo")"
+	done
+
+	if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
+		git clone --depth 1 https://github.com/VundleVim/Vundle.vim.git "$HOME/.vim/bundle/Vundle.vim"
+	fi
+}
+
+clone_plugin() {
+	[ -d "$2" ] && return 0
+	info "cloning $(basename "$2")"
+	git clone --depth 1 "$1" "$2"
+}
+
+#--------------------------------------------------------------------------
+# Report
+#--------------------------------------------------------------------------
+
+# chsh only rewrites /etc/passwd. A desktop session captures $SHELL at login
+# and hands that to every terminal it spawns, so the change does not take
+# effect until the next login -- which looks exactly like chsh having failed.
+report_shell() {
+	local zsh_path passwd_shell
+	zsh_path=$(command -v zsh 2>/dev/null)
+	[ -n "$zsh_path" ] || return 0
+
+	if command -v getent >/dev/null 2>&1; then
+		passwd_shell=$(getent passwd "$(id -un)" | cut -d: -f7)
+	else
+		passwd_shell=$(dscl . -read "/Users/$(id -un)" UserShell 2>/dev/null | awk '{print $2}')
+	fi
+	[ -n "$passwd_shell" ] || passwd_shell=${SHELL:-}
+
+	section "Shell"
+
+	if [ "$passwd_shell" != "$zsh_path" ]; then
+		echo "  Login shell is $passwd_shell"
+		echo "  Switch it with:  chsh -s $zsh_path"
+		return 0
+	fi
+
+	if [ "${SHELL:-}" != "$zsh_path" ]; then
+		echo "  zsh is the login shell, but this session still has SHELL=${SHELL:-unset}."
+		echo "  Terminals read \$SHELL, not /etc/passwd, so the desktop will keep"
+		echo "  opening the old shell until you log out and back in."
+		if command -v systemctl >/dev/null 2>&1; then
+			echo
+			echo "  To fix the running session without logging out:"
+			echo "    systemctl --user set-environment SHELL=$zsh_path"
+			echo "    dbus-update-activation-environment --systemd SHELL"
+		fi
+		return 0
+	fi
+
+	echo "  zsh is the login shell and this session agrees."
+}
+
+report() {
+	if [ ${#SKIPPED[@]} -gt 0 ]; then
+		section "Skipped ${#SKIPPED[@]} existing file(s)"
+		printf '  %s\n' "${SKIPPED[@]}"
+		echo
+		echo "  These are real files, not symlinks we created. Re-run with"
+		echo "  --force to back them up and replace them."
+	fi
+
+	report_shell
+
+	section "Done"
+	echo "  Fonts:  install-nerd-fonts"
+}
+
+[ "$DEPS_ONLY" = 1 ] || link_all
+[ "$SKIP_DEPS" = 1 ] || install_deps
+report
