@@ -183,8 +183,9 @@ install_deps() {
 	# colored-man-pages...), so it and its plugins install the same way
 	# everywhere. Only the native tooling differs per platform.
 	case " $PLATFORM_CHAIN " in
-		*" arch "*) deps_arch ;;
-		*)          deps_check_tools ;;
+		*" arch "*)  deps_arch ;;
+		*" macos "*) deps_macos ;;
+		*)           deps_check_tools ;;
 	esac
 
 	deps_oh_my_zsh
@@ -215,7 +216,35 @@ deps_arch() {
 	# ~/.zshrc from its own template and would replace our symlink.
 }
 
-# Debian, Fedora and macOS package these under inconsistent names (fd-find,
+# Homebrew uses the upstream names, so macOS can install like Arch does.
+deps_macos() {
+	if ! command -v brew &>/dev/null; then
+		warn "Homebrew not found -- install it from https://brew.sh"
+		deps_check_tools
+		return 0
+	fi
+
+	# Check commands rather than `brew list` so the system zsh, or tools
+	# installed some other way, are not reinstalled. Only neovim's formula
+	# name differs from its command.
+	local pkgs=(zsh starship fzf fd bat neovim)
+
+	local missing=()
+	local pkg
+	for pkg in "${pkgs[@]}"; do
+		command -v "${pkg/neovim/nvim}" &>/dev/null || missing+=("$pkg")
+	done
+
+	if [ ${#missing[@]} -eq 0 ]; then
+		info "all packages present"
+		return 0
+	fi
+
+	info "brew install ${missing[*]}"
+	brew install "${missing[@]}" || warn "brew step failed"
+}
+
+# Debian and Fedora package these under inconsistent names (fd-find,
 # batcat, ...), so report rather than guess.
 deps_check_tools() {
 	local tool missing=()
