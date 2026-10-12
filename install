@@ -52,7 +52,27 @@ link() {
 		return 1
 	fi
 
-	mkdir -p "$(dirname "$dest")"
+	# Older installs linked whole directories (e.g. ~/.config/ghostty) into the
+	# repo. Linking a file inside one would write a symlink into the checkout
+	# that points at itself, so swap such a parent link for a real directory.
+	local parent
+	parent=$(dirname "$dest")
+	if [ -L "$parent" ]; then
+		case "$(readlink "$parent")" in
+			"$DOTFILES"/*)
+				rm -f "$parent"
+				info "replaced old directory link: $parent"
+				;;
+		esac
+	fi
+
+	mkdir -p "$parent"
+
+	# Never link a file onto itself, however the paths got there.
+	if [ "$(cd "$parent" && pwd -P)/$(basename "$dest")" = "$(cd "$(dirname "$src")" && pwd -P)/$(basename "$src")" ]; then
+		warn "refusing to link onto itself: $dest"
+		return 1
+	fi
 
 	if [ -L "$dest" ]; then
 		[ "$(readlink "$dest")" = "$src" ] && return 0
