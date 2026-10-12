@@ -155,6 +155,7 @@ link_all() {
 	link "$DOTFILES/scripts/journal"            "$HOME/.local/bin/journal"
 	link "$DOTFILES/scripts/tmux-project-jump"  "$HOME/.local/bin/tmux-project-jump"
 	link "$DOTFILES/scripts/tmux-session-switch" "$HOME/.local/bin/tmux-session-switch"
+	link "$DOTFILES/scripts/tmux-keys"           "$HOME/.local/bin/tmux-keys"
 	link "$DOTFILES/scripts/install-nerd-fonts" "$HOME/.local/bin/install-nerd-fonts"
 	link "$HOME/.local/bin/journal"             "$HOME/.local/bin/j"
 

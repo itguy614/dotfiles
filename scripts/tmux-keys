@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# tmux-keys - Searchable reference of the active tmux key bindings
+# Used by tmux popup binding (prefix ?)
+
+prefix=$(tmux show-options -gv prefix)
+
+{
+  # -a includes bindings without a note; -P '' drops tmux's own key prefix
+  tmux list-keys -aN -P '' -T prefix | sed "s/^ */$(printf '%-10s' "$prefix")/"
+  tmux list-keys -aN -P '' -T root | grep -viE 'mouse|wheel|click' | sed 's/^ */no prefix /'
+  tmux list-keys -aN -P '' -T copy-mode-vi | sed 's/^ */copy-mode /'
+} | fzf --reverse --no-sort --header "tmux key bindings (prefix: $prefix)"
+
+exit 0
