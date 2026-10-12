@@ -26,14 +26,15 @@ set -g status-left ' #h:#S '
 set -g status-left-length 100
 
 set -g status-right-style 'fg=#8995a0'
-set -g status-right ' #{?mouse,#[fg=#50750e]M,#[fg=#f93232]M}#[fg=#8995a0] %Y-%m-%d %H:%M '
+# pane_pipe is set while prefix L is logging the pane.
+set -g status-right ' #{?pane_pipe,#[fg=#f93232 bold]● REC#[nobold] ,}#{?mouse,#[fg=#50750e]M,#[fg=#f93232]M}#[fg=#8995a0] %Y-%m-%d %H:%M '
 set -g status-right-length 50
 
 setw -g window-status-current-style 'fg=#1155a3 bold'
-setw -g window-status-current-format ' #I:#W '
+setw -g window-status-current-format ' #I:#W#{?pane_pipe,#[fg=#f93232] ●,} '
 
 setw -g window-status-style 'fg=#8995a0'
-setw -g window-status-format ' #I:#W '
+setw -g window-status-format ' #I:#W#{?pane_pipe,#[fg=#f93232] ●,} '
 
 setw -g window-status-bell-style 'fg=#e36209 bold'
 
