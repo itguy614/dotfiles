@@ -124,6 +124,7 @@ link_all() {
 	# Claude Code
 	link "$DOTFILES/claude/settings.json"        "$HOME/.claude/settings.json"
 	link "$DOTFILES/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+	sync_claude_mcp
 
 	# Git
 	link "$DOTFILES/git/gitignore"      "$HOME/.gitignore"
@@ -166,6 +167,47 @@ link_all() {
 	cleanup
 }
 
+# User-scope MCP servers live in ~/.claude.json, which Claude Code rewrites
+# constantly and which holds account state, so it cannot be symlinked. Instead
+# claude/mcp.json is the source of truth and each server is pushed in with
+# `claude mcp add-json`. Secrets stay as ${VAR} references (see ~/.zshrc.local).
+# Servers added by hand are reported, never removed.
+sync_claude_mcp() {
+	local src="$DOTFILES/claude/mcp.json" cfg="$HOME/.claude.json"
+
+	if ! command -v claude &>/dev/null || ! command -v jq &>/dev/null; then
+		warn "claude or jq missing, skipped MCP server sync"
+		return 0
+	fi
+
+	# Drop empty env/headers so `"env": {}` written by the CLI compares equal.
+	local norm='with_entries(select(.value != {}))'
+	local name want have
+	for name in $(jq -r '.mcpServers | keys[]' "$src"); do
+		want=$(jq -cS --arg n "$name" ".mcpServers[\$n] | $norm" "$src")
+		have=$(jq -cS --arg n "$name" ".mcpServers[\$n] // empty | $norm" "$cfg" 2>/dev/null)
+
+		[ "$want" = "$have" ] && continue
+
+		local verb=added
+		if [ -n "$have" ]; then
+			verb=updated
+			claude mcp remove -s user "$name" &>/dev/null
+		fi
+		if claude mcp add-json -s user "$name" "$want" &>/dev/null; then
+			info "mcp: $verb $name"
+		else
+			warn "mcp: failed to add $name"
+		fi
+	done
+
+	local extra
+	extra=$(jq -r --slurpfile src "$src" \
+		'.mcpServers // {} | keys - ($src[0].mcpServers | keys) | join(" ")' "$cfg" 2>/dev/null)
+	[ -n "$extra" ] && warn "mcp: not in claude/mcp.json (left alone): $extra"
+	return 0
+}
+
 # Omarchy keeps its Hyprland config in ~/.config/hypr, seeded from /etc/skel.
 # We track only the files we have actually diverged on; monitors.lua stays
 # untracked on purpose because output names and scale are per-machine.
@@ -204,9 +246,10 @@ install_deps() {
 	# colored-man-pages...), so it and its plugins install the same way
 	# everywhere. Only the native tooling differs per platform.
 	case " $PLATFORM_CHAIN " in
-		*" arch "*)  deps_arch ;;
-		*" macos "*) deps_macos ;;
-		*)           deps_check_tools ;;
+		*" arch "*)   deps_arch ;;
+		*" debian "*) deps_debian ;;
+		*" macos "*)  deps_macos ;;
+		*)            deps_check_tools ;;
 	esac
 
 	deps_oh_my_zsh
@@ -215,7 +258,7 @@ install_deps() {
 # Arch packages everything we need, and Omarchy publishes omarchy-zsh --
 # the maintained zsh port of its bash shell layer.
 deps_arch() {
-	local pkgs=(zsh starship fzf fd bat)
+	local pkgs=(zsh starship fzf fd bat jq)
 
 	dotfiles_platform_is omarchy && pkgs+=(omarchy-zsh)
 
@@ -248,7 +291,7 @@ deps_macos() {
 	# Check commands rather than `brew list` so the system zsh, or tools
 	# installed some other way, are not reinstalled. Only neovim's formula
 	# name differs from its command.
-	local pkgs=(zsh starship fzf fd bat neovim)
+	local pkgs=(zsh starship fzf fd bat neovim jq)
 
 	local missing=()
 	local pkg
@@ -265,8 +308,51 @@ deps_macos() {
 	brew install "${missing[@]}" || warn "brew step failed"
 }
 
-# Debian and Fedora package these under inconsistent names (fd-find,
-# batcat, ...), so report rather than guess.
+# Debian and Ubuntu rename fd and bat to fdfind and batcat (name clashes with
+# older packages), so link the expected names into ~/.local/bin, which
+# shell/env.sh puts first on PATH. starship is only packaged from Debian 13 /
+# Ubuntu 25.04 on; older releases get the official installer instead.
+deps_debian() {
+	local pkgs=(zsh fzf fd-find bat jq)
+	apt_has_candidate starship && pkgs+=(starship)
+
+	local missing=()
+	local pkg
+	for pkg in "${pkgs[@]}"; do
+		dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'ok installed' \
+			|| missing+=("$pkg")
+	done
+
+	if [ ${#missing[@]} -eq 0 ]; then
+		info "all packages present"
+	else
+		info "sudo apt-get install ${missing[*]}"
+		sudo apt-get install -y "${missing[@]}" || warn "apt step failed"
+	fi
+
+	local tool real
+	for tool in fd:fdfind bat:batcat; do
+		real=$(command -v "${tool#*:}" 2>/dev/null) || continue
+		link "$real" "$HOME/.local/bin/${tool%%:*}" && info "${tool%%:*} -> ${tool#*:}"
+	done
+
+	if ! command -v starship &>/dev/null && [ ! -x "$HOME/.local/bin/starship" ]; then
+		info "installing starship to ~/.local/bin"
+		curl -fsSL https://starship.rs/install.sh | sh -s -- --yes --bin-dir "$HOME/.local/bin" \
+			|| warn "starship install failed"
+	fi
+
+	PATH="$HOME/.local/bin:$PATH" deps_check_tools
+}
+
+apt_has_candidate() {
+	local candidate
+	candidate=$(apt-cache policy "$1" 2>/dev/null | awk '/Candidate:/ {print $2}')
+	[ -n "$candidate" ] && [ "$candidate" != "(none)" ]
+}
+
+# Fedora packages these under inconsistent names, so report rather than
+# guess.
 deps_check_tools() {
 	local tool missing=()
 	for tool in zsh starship fzf fd bat nvim; do

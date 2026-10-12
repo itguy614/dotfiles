@@ -16,6 +16,10 @@ alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias ~="cd ~"
 
+# Oh My Zsh's common-aliases plugin defines fd as `find . -type d -name`,
+# which shadows the real fd binary.
+unalias fd 2>/dev/null
+
 alias p="cd $HOME/code"
 alias v="nvim"
 alias vim="nvim"

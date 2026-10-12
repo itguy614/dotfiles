@@ -24,6 +24,7 @@ This is a **dotfiles repository** containing configuration files for development
 - **`claude/`** - Claude Code settings and configuration
   - `settings.json` - Primary Claude Code settings (permissions, hooks, model, etc.)
   - `settings.md` - Documentation for settings.json options
+  - `mcp.json` - User-scope MCP servers; `install` syncs them into `~/.claude.json` via `claude mcp add-json` (that file can't be symlinked). Secrets are `${VAR}` references exported from `~/.zshrc.local`
 - **`nvim/`** - Neovim configuration
   - `init.lua` - Main entry point, loads plugins and user config
   - `lua/user/plugins.lua` - Lazy package manager plugin specs
@@ -55,7 +56,7 @@ The script:
 2. Creates necessary directories (`~/.config`, `~/.local/bin`, `~/.vim`)
 3. Symlinks all dotfiles to appropriate `$HOME` locations, skipping (not deleting) any real file it did not create
 4. Links the most specific per-platform variant of each config
-5. Installs dependencies (Oh My Zsh, its plugins, Vundle, and native packages on Arch)
+5. Installs dependencies (Oh My Zsh, its plugins, Vundle, and native packages on Arch and Debian/Ubuntu)
 
 Fonts install separately via `scripts/install-nerd-fonts`, which dispatches on
 the same platform chain (brew casks / the `nerd-fonts` pacman group / GitHub

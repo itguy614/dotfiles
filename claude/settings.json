@@ -22,7 +22,10 @@
       "WebFetch",
       "WebSearch",
       "Task",
-      "Agent"
+      "Agent",
+      "mcp__claude_ai_Atlassian_MCP__search",
+      "mcp__claude_ai_Atlassian_MCP__searchJiraIssuesUsingJql",
+      "mcp__claude_ai_Atlassian_MCP__getJiraIssue"
     ],
     "deny": [
       "Read(./secrets/**)",
@@ -97,7 +100,8 @@
     "qa-tools@stat-ai": true,
     "shared-tools@stat-ai": true,
     "web-developer-tools@stat-ai": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "legal@synced": false
   },
   "extraKnownMarketplaces": {
     "stat-ai": {
