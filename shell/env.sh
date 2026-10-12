@@ -38,6 +38,16 @@ path_prepend "./bin"
 path_prepend "$HOME/.local/bin"
 export PATH
 
+# A client terminal this host has no terminfo for (xterm-ghostty, xterm-kitty
+# over ssh) makes tmux refuse to start with "missing or unsuitable terminal",
+# and the auto-attach in zsh/tmux execs it. Fall back to a TERM every host
+# knows. Ghostty's ssh-terminfo/ssh-env cover this from the client side when
+# they work; this covers every other client.
+if [ -n "$TERM" ] && command -v infocmp >/dev/null 2>&1 \
+	&& ! infocmp "$TERM" >/dev/null 2>&1; then
+	export TERM=xterm-256color
+fi
+
 export EDITOR=nvim
 export VISUAL=nvim
 
