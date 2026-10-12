@@ -54,6 +54,28 @@ alias esp="idf.py"
 alias ef="idf.py"
 
 #--------------------------------------------------------------------------
+# Node / npm
+#--------------------------------------------------------------------------
+alias n="npm"
+alias ni="npm install"
+alias nid="npm install --save-dev"
+alias nci="npm ci"
+alias nr="npm run"
+alias nrd="npm run dev"
+alias nrb="npm run build"
+alias nrw="npm run watch"
+alias nrl="npm run lint"
+alias nrt="npm run test"
+alias nt="npm test"
+alias nx="npx"
+alias nls="npm ls --depth=0"
+alias nout="npm outdated"
+
+alias nvmi="nvm install"
+alias nvmu="nvm use"
+alias nvml="nvm ls"
+
+#--------------------------------------------------------------------------
 # Git
 #--------------------------------------------------------------------------
 alias g="git"
