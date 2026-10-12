@@ -4,11 +4,42 @@
 
 prefix=$(tmux show-options -gv prefix)
 
+# Print one key table as "<label> <key> <note or command>".
+#
+# `list-keys -aN` would cover both in one call, but tmux 3.4 prints bindings
+# that have no note with the key and command run together ("C-bsend-keys ...").
+# So notes come from -N, and the plain listing fills in everything without one.
+# Plain keys are escaped (\$, '"'), hence the unquoting before the match.
+table() {
+  {
+    tmux list-keys -N -P '' -T "$1" | sed 's/^/N /'
+    tmux list-keys -T "$1" | sed 's/^/P /'
+  } | awk -v label="$2" '
+    function show(key, text) { printf "%-10s %-12s %s\n", label, key, text }
+    $1 == "N" {
+      line = substr($0, 3)
+      key = line; sub(/ .*/, "", key)
+      text = line; sub(/^[^ ]+ +/, "", text)
+      seen[key] = 1
+      show(key, text)
+      next
+    }
+    {
+      for (i = 2; i <= NF && $i != "-T"; i++) ;
+      key = $(i + 2)
+      if (key ~ /^\\./) key = substr(key, 2)
+      else if (key ~ /^["\047].+["\047]$/) key = substr(key, 2, length(key) - 2)
+      if (key in seen) next
+      text = $(i + 3)
+      for (j = i + 4; j <= NF; j++) text = text " " $j
+      show(key, text)
+    }'
+}
+
 {
-  # -a includes bindings without a note; -P '' drops tmux's own key prefix
-  tmux list-keys -aN -P '' -T prefix | sed "s/^ */$(printf '%-10s' "$prefix")/"
-  tmux list-keys -aN -P '' -T root | grep -viE 'mouse|wheel|click' | sed 's/^ */no prefix /'
-  tmux list-keys -aN -P '' -T copy-mode-vi | sed 's/^ */copy-mode /'
+  table prefix "$prefix"
+  table root "no prefix" | grep -viE 'mouse|wheel|click'
+  table copy-mode-vi "copy-mode"
 } | fzf --reverse --no-sort --header "tmux key bindings (prefix: $prefix)"
 
 exit 0
