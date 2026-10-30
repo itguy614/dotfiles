@@ -1,0 +1,18 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[projects."/home/kwolf"]
+trust_level = "trusted"
+
+[projects."/home/kwolf/code/itguy614/dotfiles"]
+trust_level = "trusted"
+
+[projects."/home/kwolf/code/gohcltech/ontario"]
+trust_level = "trusted"
+
+[tui]
+theme = "solarized-light"
+screen_reader_detection_done = true
+
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 4

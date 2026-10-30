@@ -195,3 +195,7 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 #--------------------------------------------------------------------------
 # Last, so starship wins over any prompt oh-my-zsh or the platform layer set.
 command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+# >>> Codex installer >>>
+export PATH="/home/kwolf/.local/bin:$PATH"
+# <<< Codex installer <<<

@@ -128,6 +128,7 @@
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "fileCheckpointingEnabled": false,
+  "remoteControlAtStartup": true,
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",
@@ -140,5 +141,6 @@
     "description": "Claude Code settings for [project name]",
     "lastModified": "2025-10-23",
     "author": "Kurt Wolf <kwolf@gohcl.com>"
-  }
+  },
+  "agentPushNotifEnabled": true
 }

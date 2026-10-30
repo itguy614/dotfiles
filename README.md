@@ -10,7 +10,7 @@ This repository provides curated configurations for:
 - **Editors**: Neovim with Lazy.nvim plugin manager and extensive plugin ecosystem
 - **Version Control**: Git configuration with hooks and aliases
 - **Terminals**: WezTerm, Kitty, Ghostty, Hyper, Tmux, Screen configurations
-- **Tools**: Claude Code, Vim, PHP/Laravel, ctags, EditorConfig
+- **Tools**: Codex, Claude Code, Vim, PHP/Laravel, ctags, EditorConfig
 - **Utilities**: Custom scripts (journal, task manager)
 
 ## Quick Start
@@ -87,6 +87,7 @@ dotfiles/
 ├── lib/                       # Platform detection shared by scripts & shells
 ├── shell/                     # Shell-agnostic env, aliases, functions
 ├── claude/                    # Claude Code settings & hooks
+├── codex/                     # Codex user configuration
 ├── nvim/                      # Neovim configuration
 ├── zsh/                       # Zsh-specific configuration
 ├── starship/                  # Prompt configuration (all platforms)
@@ -136,6 +137,19 @@ dotfiles/
 - **Features**: Global aliases, commit hooks, cross-platform configuration
 - **OS-Specific**: Separate configs for Linux, macOS, and Windows
 - **Hooks**: Automatic commit message generation
+
+### Codex
+
+`codex/config.toml` is linked to `~/.codex/config.toml`, the
+[Codex user configuration](https://learn.chatgpt.com/docs/config-file/config-basic).
+It disables command approval prompts with `approval_policy = "never"` and
+Codex sandbox restrictions with `sandbox_mode = "danger-full-access"`. It also
+includes the Solarized Light terminal theme and trusted project paths.
+Adjust the absolute paths for each machine. Credentials, history, sessions,
+and installed plugins remain local in `~/.codex/`.
+
+An existing config is skipped by default; `./install --skip-deps --force`
+backs up existing files before replacing them with symlinks.
 
 ### Claude Code
 

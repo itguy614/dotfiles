@@ -126,6 +126,9 @@ link_all() {
 	link "$DOTFILES/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 	sync_claude_mcp
 
+	# Codex: link only the config; credentials and session state stay local.
+	link "$DOTFILES/codex/config.toml" "$HOME/.codex/config.toml"
+
 	# Git
 	link "$DOTFILES/git/gitignore"      "$HOME/.gitignore"
 	link "$DOTFILES/git/gitconfig"      "$HOME/.gitconfig"
