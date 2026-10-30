@@ -101,7 +101,9 @@ alias gl="git log"
 alias glp="git log -p"
 alias gls="git log --oneline"
 alias glv="git log --oneline --graph"
-alias go="git checkout "
+# Yield `go` to the Go toolchain when it's installed.
+unalias go 2>/dev/null
+command -v go >/dev/null 2>&1 || alias go="git checkout "
 alias gp="git push"
 alias grh="git reset HEAD"
 alias gs="git status "
