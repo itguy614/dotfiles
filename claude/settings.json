@@ -1,5 +1,7 @@
 {
-  "env": {},
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+  },
   "permissions": {
     "allow": [
       "Read",
@@ -51,7 +53,7 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
+  "model": "opusplan",
   "hooks": {
     "PostToolUse": [
       {
@@ -101,7 +103,8 @@
     "shared-tools@stat-ai": true,
     "web-developer-tools@stat-ai": true,
     "frontend-design@claude-plugins-official": true,
-    "legal@synced": false
+    "legal@synced": false,
+    "postman@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "stat-ai": {
@@ -129,6 +132,7 @@
   "theme": "auto",
   "fileCheckpointingEnabled": false,
   "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
   "maxTokens": 4096,
   "autoAcceptPermissions": false,
   "projectName": "",

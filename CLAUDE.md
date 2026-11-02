@@ -81,7 +81,7 @@ The same mechanism drives `~/.gitconfig.os`, `~/.tmux.theme.conf`, and
 
 ### Claude Code Settings
 Located in `claude/settings.json`. Key configurations:
-- **Model**: set in `claude/settings.json` (currently `opus[1m]`)
+- **Model**: set in `claude/settings.json` (currently `opusplan`; subagents use `sonnet` via `CLAUDE_CODE_SUBAGENT_MODEL` in `env`)
 - **Permissions**: Allows file read/write, git operations, npm/yarn, web fetching
 - **Denied**: `.env` files, `node_modules/`, `build/` dirs, `rm/sudo/curl/wget` commands, git push
 - **Hooks**: 
