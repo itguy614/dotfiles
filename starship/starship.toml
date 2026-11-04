@@ -35,6 +35,6 @@ staged     = ""
 renamed    = ""
 deleted    = ""
 
-# Kept deliberately in ANSI colour names rather than hex so the prompt follows
+# Kept deliberately in ANSI color names rather than hex so the prompt follows
 # whatever palette the terminal is using -- that, not any theming pass, is what
 # makes it track omarchy-theme-set.

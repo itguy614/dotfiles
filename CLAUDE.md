@@ -19,7 +19,7 @@ This is a **dotfiles repository** containing configuration files for development
   - `aliases.sh` - every alias (git, Laravel, composer, navigation)
   - `functions.sh` - `db`, `gi`, and friends
 - **`starship/`** - Prompt config, linked on every platform including Omarchy
-  - Uses ANSI colour names, not hex, so the prompt follows the terminal palette (this is what makes it track `omarchy-theme-set` — nothing themes the file itself)
+  - Uses ANSI color names, not hex, so the prompt follows the terminal palette (this is what makes it track `omarchy-theme-set` — nothing themes the file itself)
 - **`omarchy/`** - Omarchy desktop overrides (`hypr/`); only files diverging from `/etc/skel`
 - **`claude/`** - Claude Code settings and configuration
   - `settings.json` - Primary Claude Code settings (permissions, hooks, model, etc.)

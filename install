@@ -118,7 +118,7 @@ link_all() {
 
 	# Multiplexers
 	link "$DOTFILES/tmux/tmux.conf"     "$HOME/.tmux.conf"
-	# Omarchy keeps ANSI-name colours so omarchy-theme-set applies. Elsewhere
+	# Omarchy keeps ANSI-name colors so omarchy-theme-set applies. Elsewhere
 	# the theme manager (scripts/theme) owns them; tmux.conf reads its state.
 	if dotfiles_platform_is omarchy; then
 		link_variant "$DOTFILES/tmux" theme "$HOME/.tmux.theme.conf"
@@ -159,7 +159,7 @@ link_all() {
 	# Starship owns the prompt everywhere, including Omarchy: nothing in the
 	# distro rewrites starship.toml (it is shipped once via /etc/skel, and
 	# major-version upgrades skip files whose checksum shows local edits). The
-	# ANSI colour names in the config are what make it follow the theme.
+	# ANSI color names in the config are what make it follow the theme.
 	link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
 
 	# Scripts

@@ -1,6 +1,6 @@
 # Base Ghostty config, shared by every machine.
 #
-# Colours and platform-specific tweaks live in platform.conf, which `install`
+# Colors and platform-specific tweaks live in platform.conf, which `install`
 # symlinks to the right ghostty/platform.<platform> variant. It is included
 # last so the platform layer always wins.
 
@@ -35,7 +35,7 @@ keybind = shift+enter=text:\x1b\r
 # fails. Platform files that set this key must repeat both flags.
 shell-integration-features = ssh-terminfo,ssh-env
 
-# Colours from the theme manager (scripts/theme). Optional: absent on Omarchy,
+# Colors from the theme manager (scripts/theme). Optional: absent on Omarchy,
 # where omarchy-theme-set owns the palette (see platform.omarchy).
 config-file = ?"~/.local/state/themes/current/ghostty.conf"
 

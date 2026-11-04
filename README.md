@@ -250,14 +250,14 @@ there.
 Note that nothing in Omarchy themes `starship.toml` — it is shipped once via
 `/etc/skel` and left alone thereafter, so this repo links its own copy here as
 on every other platform. The prompt tracks the theme because the config uses
-ANSI colour names rather than hex.
+ANSI color names rather than hex.
 
 
 | Target | How |
 | ------ | --- |
 | Ghostty | `ghostty/platform.omarchy` includes the theme's `ghostty.conf` |
 | Kitty | `globinclude` of the theme's `kitty.conf` (a no-op elsewhere) |
-| Tmux | `tmux/theme.omarchy` uses ANSI colour names, which follow the terminal |
+| Tmux | `tmux/theme.omarchy` uses ANSI color names, which follow the terminal |
 | Neovim | Not wired up — `nvim/lua/user/plugins/nord-light-brighter.lua` is hand-tuned. To follow Omarchy instead, add `~/.local/state/omarchy/current/theme/neovim.lua` as a lazy.nvim spec |
 
 **Desktop.** `omarchy/hypr/` tracks only the Hyprland files that diverge from
