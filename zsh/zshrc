@@ -199,3 +199,7 @@ command -v starship &>/dev/null && eval "$(starship init zsh)"
 # >>> Codex installer >>>
 export PATH="/home/kwolf/.local/bin:$PATH"
 # <<< Codex installer <<<
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/kwolf/Library/Application Support/Herd/config/php/84"

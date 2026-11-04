@@ -42,7 +42,18 @@ This is a **dotfiles repository** containing configuration files for development
   - `git_template/hooks/prepare-commit-msg` - Git commit hooks
 - **`vim/`**, **`tmux/`**, **`kitty/`**, **`ghostty/`**, **`hyper/`** - Terminal & editor configs
 - **`ctags/`**, **`editorconfig/`**, **`php/`** - Tool-specific config files
-- **`scripts/`** - Utility scripts (journal, `t` task manager)
+- **`themes/`** - Built-in `local` theme source, in the layout of `gohcl/app-themes`' `dist/` (`ghostty/themes/<Name>`, `tmux/<slug>.conf`, `neovim/colorscheme/<slug>`, `bat/themes/<Name>.tmTheme`)
+- **`scripts/`** - Utility scripts (journal, `t` task manager, `theme` switcher)
+
+## Theme Manager
+
+`scripts/theme` (linked to `~/.local/bin/theme`) switches ghostty, tmux, neovim and bat/delta in one shot. VS Code is out of scope.
+
+- `theme list | set <name> | current | update`, `theme source list|add|rm`
+- Sources: built-in `local` (`themes/local/`) plus git repos listed in `~/.config/themes/sources` (`name url [ref]`), cloned to `~/.local/share/themes/sources`. `gohcl/app-themes` is registered by default; run `theme update` to fetch it
+- `set` links each app's file into `~/.local/state/themes/current/` (`ghostty.conf`, `tmux.conf`, `neovim/` + `neovim.colorscheme`, `bat.theme`), then reloads tmux and ghostty (SIGUSR2). `ghostty/config`, `tmux/tmux.conf`, `nvim/lua/user/theme.lua` and `shell/env.sh` (`BAT_THEME`) read that state
+- Apps a theme has no file for are skipped; Omarchy is left to `omarchy-theme-set` and the tool refuses to run there
+- Add a local theme by dropping files into `themes/local/` using the layout above
 
 ## Installation & Setup
 

@@ -1,0 +1,396 @@
+#!/usr/bin/env bash
+#
+# theme -- switch every themed app (ghostty, tmux, neovim, bat/delta) at once.
+#
+#   theme list                         themes from every source, * = active
+#   theme set <name>                   apply a theme ("HCL Dark" or "app-themes:HCL Dark")
+#   theme current                      print the active theme
+#   theme update                       clone/pull the git sources, re-apply the active theme
+#   theme source list                  registered sources
+#   theme source add <name> <url> [ref]  register and clone a git source
+#   theme source rm <name>             unregister and delete its clone
+#   theme init                         apply the default theme if none is set (used by install)
+#
+# A source is a directory in the layout of gohcl/app-themes' dist/:
+#
+#   ghostty/themes/<Name>    tmux/<slug>.conf    bat/themes/<Name>.tmTheme
+#   neovim/colors/<slug>.lua (+ neovim/lua/...)  neovim/colorscheme/<slug>
+#
+# neovim/colorscheme/<slug> is a one-line file naming a colorscheme some plugin
+# already provides, for themes that ship no colors/ file of their own.
+#
+# `local` (themes/local in this repo) is built in. Git sources are cloned under
+# ~/.local/share/themes/sources and listed in ~/.config/themes/sources
+# ("name url [ref]" per line). A git source's themes are read from its dist/.
+#
+# Applying a theme links each app's file into ~/.local/state/themes/current/,
+# which the app configs include, then reloads whatever is running. Apps a theme
+# has no file for are skipped. Omarchy owns theming on its machines, so this
+# tool refuses to apply there.
+
+set -uo pipefail
+
+# Resolve our own symlink (macOS readlink has no -f) to find the repo.
+_src=${BASH_SOURCE[0]}
+while [ -L "$_src" ]; do
+	_dir=$(cd "$(dirname "$_src")" && pwd)
+	_src=$(readlink "$_src")
+	case $_src in /*) ;; *) _src=$_dir/$_src ;; esac
+done
+DOTFILES=$(cd "$(dirname "$_src")/.." && pwd)
+# shellcheck source=../lib/platform.sh
+. "$DOTFILES/lib/platform.sh"
+
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/themes
+DATA=${XDG_DATA_HOME:-$HOME/.local/share}/themes/sources
+CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}/themes
+SOURCES=$CONFIG/sources
+CURRENT=$STATE/current
+LOCAL_ROOT=$DOTFILES/themes/local
+DEFAULT_THEME='Nord Light Brighter'
+DEFAULT_SOURCE_LINE='app-themes git@ssh.bitbucket.org:gohcl/app-themes.git'
+
+die()  { printf 'theme: %s\n' "$*" >&2; exit 1; }
+warn() { printf '  ! %s\n' "$*" >&2; }
+info() { printf '  %s\n' "$*"; }
+
+slug() {
+	printf '%s' "$1" | tr '[:upper:]' '[:lower:]' \
+		| sed -e 's/[^a-z0-9]\{1,\}/-/g' -e 's/^-//' -e 's/-$//'
+}
+
+omarchy_guard() {
+	if dotfiles_platform_is omarchy; then
+		die "Omarchy owns theming on this machine; use omarchy-theme-set"
+	fi
+}
+
+#--------------------------------------------------------------------------
+# Sources
+#--------------------------------------------------------------------------
+
+ensure_sources_file() {
+	[ -f "$SOURCES" ] && return 0
+	mkdir -p "$CONFIG"
+	{
+		echo '# name url [ref]   -- git sources of themes (layout: see `theme` header)'
+		echo "$DEFAULT_SOURCE_LINE"
+	} > "$SOURCES"
+}
+
+# Registered git sources as "name url ref" lines.
+git_sources() {
+	ensure_sources_file
+	grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$SOURCES" || true
+}
+
+source_names() {
+	echo local
+	git_sources | awk '{print $1}'
+}
+
+source_known() {
+	source_names | grep -x -- "$1" >/dev/null
+}
+
+# Directory holding a source's per-app folders.
+source_assets() {
+	local r
+	if [ "$1" = local ]; then r=$LOCAL_ROOT; else r=$DATA/$1; fi
+	[ -d "$r/dist" ] && r=$r/dist
+	printf '%s\n' "$r"
+}
+
+clone_source() { # name url [ref]
+	local name=$1 url=$2 ref=${3:-}
+	mkdir -p "$DATA"
+	if [ -d "$DATA/$name/.git" ]; then
+		if [ -n "$ref" ]; then
+			git -C "$DATA/$name" fetch -q --tags origin "$ref" \
+				&& git -C "$DATA/$name" checkout -q FETCH_HEAD
+		else
+			git -C "$DATA/$name" pull -q --ff-only
+		fi
+	elif [ -n "$ref" ]; then
+		git clone -q --depth 1 --branch "$ref" "$url" "$DATA/$name"
+	else
+		git clone -q --depth 1 "$url" "$DATA/$name"
+	fi
+}
+
+#--------------------------------------------------------------------------
+# Theme lookup
+#--------------------------------------------------------------------------
+
+# find_asset <dir> <suffix> <slug>: the file in <dir> whose name, minus
+# <suffix>, slugs to <slug>. Lets "HCL Dark" match hcl-dark.conf.
+find_asset() {
+	local f b
+	[ -d "$1" ] || return 1
+	for f in "$1"/*"$2"; do
+		[ -f "$f" ] || continue
+		b=$(basename "$f" "$2")
+		if [ "$(slug "$b")" = "$3" ]; then
+			printf '%s\n' "$f"
+			return 0
+		fi
+	done
+	return 1
+}
+
+# Themes in one source as "source<TAB>slug<TAB>display name". The display name
+# comes from ghostty/bat (real names) before tmux/neovim (slugs only).
+themes_in() {
+	local a f
+	a=$(source_assets "$1")
+	[ -d "$a" ] || return 0
+	{
+		for f in "$a"/ghostty/themes/*; do
+			[ -f "$f" ] && printf '%s\t%s\n' "$(slug "$(basename "$f")")" "$(basename "$f")"
+		done
+		for f in "$a"/bat/themes/*.tmTheme; do
+			[ -f "$f" ] && printf '%s\t%s\n' "$(slug "$(basename "$f" .tmTheme)")" "$(basename "$f" .tmTheme)"
+		done
+		for f in "$a"/tmux/*.conf; do
+			[ -f "$f" ] && printf '%s\t%s\n' "$(slug "$(basename "$f" .conf)")" "$(basename "$f" .conf)"
+		done
+		for f in "$a"/neovim/colors/*.lua; do
+			[ -f "$f" ] && printf '%s\t%s\n' "$(slug "$(basename "$f" .lua)")" "$(basename "$f" .lua)"
+		done
+		for f in "$a"/neovim/colorscheme/*; do
+			[ -f "$f" ] && printf '%s\t%s\n' "$(slug "$(basename "$f")")" "$(basename "$f")"
+		done
+		true
+	} | awk -F'\t' '!seen[$1]++' | while IFS=$'\t' read -r s d; do
+		printf '%s\t%s\t%s\n' "$1" "$s" "$d"
+	done
+}
+
+all_themes() {
+	local s
+	for s in $(source_names); do themes_in "$s"; done
+	return 0
+}
+
+# resolve_theme <query>: "source<TAB>slug<TAB>display" of the first match.
+# "source:name" restricts the search to that source.
+resolve_theme() {
+	local query=$1 only='' want
+	case $query in
+		*:*)
+			if source_known "${query%%:*}"; then
+				only=${query%%:*}
+				query=${query#*:}
+			fi
+			;;
+	esac
+	want=$(slug "$query")
+	all_themes | awk -F'\t' -v only="$only" -v want="$want" \
+		'(only == "" || $1 == only) && $2 == want && !done++ { print }' | grep .
+}
+
+apps_for() { # source slug -> "ghostty tmux nvim bat"
+	local a out=''
+	a=$(source_assets "$1")
+	find_asset "$a/ghostty/themes" '' "$2" >/dev/null && out="$out ghostty"
+	find_asset "$a/tmux" .conf "$2" >/dev/null && out="$out tmux"
+	{ find_asset "$a/neovim/colors" .lua "$2" || find_asset "$a/neovim/colorscheme" '' "$2"; } >/dev/null && out="$out nvim"
+	find_asset "$a/bat/themes" .tmTheme "$2" >/dev/null && out="$out bat"
+	printf '%s\n' "${out# }"
+}
+
+#--------------------------------------------------------------------------
+# Applying
+#--------------------------------------------------------------------------
+
+# link_app <name> <target>: point current/<name> at <target>, or drop a stale
+# link when the theme has none for that app.
+link_app() {
+	if [ -n "$2" ]; then
+		ln -sfn "$2" "$CURRENT/$1"
+		return 0
+	fi
+	rm -f "$CURRENT/$1"
+	return 1
+}
+
+install_bat_theme() { # tmTheme file
+	local bat dest dir
+	bat=$(command -v bat || command -v batcat) || return 0
+	dir=$("$bat" --config-dir)/themes
+	dest=$dir/$(basename "$1")
+	if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+		warn "bat: $dest is a real file, left alone"
+		return 0
+	fi
+	[ -L "$dest" ] && [ "$(readlink "$dest")" = "$1" ] && return 0
+	mkdir -p "$dir"
+	ln -sfn "$1" "$dest"
+	"$bat" cache --build >/dev/null 2>&1 || warn "bat: cache --build failed"
+}
+
+apply_theme() { # source slug display [quiet]
+	local src=$1 slug=$2 display=$3 quiet=${4:-} a f applied='' skipped=''
+	a=$(source_assets "$src")
+	mkdir -p "$CURRENT"
+
+	if f=$(find_asset "$a/ghostty/themes" '' "$slug"); then
+		link_app ghostty.conf "$f"; applied="$applied ghostty"
+	else link_app ghostty.conf ''; skipped="$skipped ghostty"; fi
+
+	if f=$(find_asset "$a/tmux" .conf "$slug"); then
+		link_app tmux.conf "$f"; applied="$applied tmux"
+	else link_app tmux.conf ''; skipped="$skipped tmux"; fi
+
+	if f=$(find_asset "$a/neovim/colors" .lua "$slug"); then
+		ln -sfn "$a/neovim" "$CURRENT/neovim"
+		basename "$f" .lua > "$CURRENT/neovim.colorscheme"
+		applied="$applied nvim"
+	elif f=$(find_asset "$a/neovim/colorscheme" '' "$slug"); then
+		rm -f "$CURRENT/neovim"
+		head -n1 "$f" > "$CURRENT/neovim.colorscheme"
+		applied="$applied nvim"
+	else
+		rm -f "$CURRENT/neovim" "$CURRENT/neovim.colorscheme"
+		skipped="$skipped nvim"
+	fi
+
+	if f=$(find_asset "$a/bat/themes" .tmTheme "$slug"); then
+		basename "$f" .tmTheme > "$CURRENT/bat.theme"
+		install_bat_theme "$f"
+		applied="$applied bat"
+	else
+		rm -f "$CURRENT/bat.theme"
+		skipped="$skipped bat"
+	fi
+
+	# Written last so nvim's mtime check sees a finished switch.
+	printf '%s:%s\n' "$src" "$display" > "$CURRENT/theme"
+
+	[ -n "$quiet" ] && return 0
+	info "applied $src:$display to:${applied:- nothing}"
+	[ -n "$skipped" ] && info "no theme files for:$skipped"
+	reload_apps
+}
+
+reload_apps() {
+	if [ -e "$CURRENT/tmux.conf" ] && command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
+		tmux source-file -q "$CURRENT/tmux.conf" && info "reloaded tmux"
+	fi
+	if pgrep -x ghostty >/dev/null 2>&1; then
+		# Ghostty re-reads its config on SIGUSR2.
+		pkill -USR2 -x ghostty && info "reloaded ghostty"
+	fi
+	info "neovim picks it up on focus; new shells pick up BAT_THEME (exec zsh)"
+}
+
+#--------------------------------------------------------------------------
+# Commands
+#--------------------------------------------------------------------------
+
+cmd_list() {
+	local cur='' s sl d apps mark missing=''
+	[ -f "$CURRENT/theme" ] && cur=$(cat "$CURRENT/theme")
+	for s in $(source_names); do
+		[ -d "$(source_assets "$s")" ] || missing="$missing $s"
+	done
+	all_themes | while IFS=$'\t' read -r s sl d; do
+		mark=' '
+		[ "$s:$d" = "$cur" ] && mark='*'
+		apps=$(apps_for "$s" "$sl")
+		printf '%s %-34s %s\n' "$mark" "$s:$d" "[$apps]"
+	done
+	[ -n "$missing" ] && warn "not cloned yet:$missing (run: theme update)"
+	return 0
+}
+
+cmd_set() {
+	omarchy_guard
+	[ $# -ge 1 ] || die "usage: theme set <name>"
+	local line src slug display
+	line=$(resolve_theme "$*") || die "no theme matching '$*' (see: theme list)"
+	IFS=$'\t' read -r src slug display <<<"$line"
+	apply_theme "$src" "$slug" "$display"
+}
+
+cmd_current() {
+	[ -f "$CURRENT/theme" ] && cat "$CURRENT/theme" || { echo "none"; return 1; }
+}
+
+cmd_init() {
+	dotfiles_platform_is omarchy && return 0
+	[ -f "$CURRENT/theme" ] && return 0
+	local line src slug display
+	line=$(resolve_theme "local:$DEFAULT_THEME") || return 0
+	IFS=$'\t' read -r src slug display <<<"$line"
+	apply_theme "$src" "$slug" "$display" quiet
+	info "theme: default is $src:$display"
+}
+
+cmd_update() {
+	local name url ref rc=0
+	while read -r name url ref; do
+		[ -n "$name" ] || continue
+		if clone_source "$name" "$url" "${ref:-}"; then
+			info "updated $name"
+		else
+			warn "failed to update $name ($url)"; rc=1
+		fi
+	done < <(git_sources)
+
+	# Re-apply so an updated theme file takes effect; skip on Omarchy.
+	if [ -f "$CURRENT/theme" ] && ! dotfiles_platform_is omarchy; then
+		local cur line src slug display
+		cur=$(cat "$CURRENT/theme")
+		if line=$(resolve_theme "$cur"); then
+			IFS=$'\t' read -r src slug display <<<"$line"
+			apply_theme "$src" "$slug" "$display"
+		fi
+	fi
+	return $rc
+}
+
+cmd_source() {
+	local sub=${1:-list}
+	[ $# -gt 0 ] && shift
+	case $sub in
+		list)
+			printf '  %-14s %s\n' local "$LOCAL_ROOT (built in)"
+			git_sources | while read -r n u r; do
+				printf '  %-14s %s%s\n' "$n" "$u" "${r:+ @ $r}"
+			done
+			;;
+		add)
+			[ $# -ge 2 ] || die "usage: theme source add <name> <git-url> [ref]"
+			local name=$1 url=$2 ref=${3:-}
+			[ "$name" = local ] && die "'local' is reserved"
+			source_known "$name" && die "source '$name' already exists"
+			clone_source "$name" "$url" "$ref" || die "clone failed: $url"
+			printf '%s %s%s\n' "$name" "$url" "${ref:+ $ref}" >> "$SOURCES"
+			info "added $name"
+			;;
+		rm|remove)
+			[ $# -eq 1 ] || die "usage: theme source rm <name>"
+			[ "$1" = local ] && die "'local' is built in"
+			source_known "$1" || die "no such source: $1"
+			grep -v "^$1[[:space:]]" "$SOURCES" > "$SOURCES.tmp" && mv "$SOURCES.tmp" "$SOURCES"
+			# Only ever delete inside our own clone cache.
+			case $DATA/$1 in "$DATA"/?*) rm -rf -- "${DATA:?}/$1" ;; esac
+			info "removed $1"
+			;;
+		*) die "unknown source command: $sub" ;;
+	esac
+}
+
+usage() { sed -n '2,/^$/p' "$0" | sed 's/^#\( \{0,1\}\)//'; }
+
+case ${1:-} in
+	list|ls)  cmd_list ;;
+	set)      shift; cmd_set "$@" ;;
+	current)  cmd_current ;;
+	update)   cmd_update ;;
+	source)   shift; cmd_source "$@" ;;
+	init)     cmd_init ;;
+	-h|--help|help|'') usage ;;
+	*) usage >&2; exit 1 ;;
+esac

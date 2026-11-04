@@ -118,7 +118,15 @@ link_all() {
 
 	# Multiplexers
 	link "$DOTFILES/tmux/tmux.conf"     "$HOME/.tmux.conf"
-	link_variant "$DOTFILES/tmux" theme "$HOME/.tmux.theme.conf"
+	# Omarchy keeps ANSI-name colours so omarchy-theme-set applies. Elsewhere
+	# the theme manager (scripts/theme) owns them; tmux.conf reads its state.
+	if dotfiles_platform_is omarchy; then
+		link_variant "$DOTFILES/tmux" theme "$HOME/.tmux.theme.conf"
+	elif [ -L "$HOME/.tmux.theme.conf" ]; then
+		case "$(readlink "$HOME/.tmux.theme.conf")" in
+			"$DOTFILES"/*) rm -f "$HOME/.tmux.theme.conf" ;;
+		esac
+	fi
 	link "$DOTFILES/screen/screenrc"    "$HOME/.screenrc"
 
 	# Claude Code
@@ -161,10 +169,15 @@ link_all() {
 	link "$DOTFILES/scripts/tmux-session-switch" "$HOME/.local/bin/tmux-session-switch"
 	link "$DOTFILES/scripts/tmux-keys"           "$HOME/.local/bin/tmux-keys"
 	link "$DOTFILES/scripts/install-nerd-fonts" "$HOME/.local/bin/install-nerd-fonts"
+	link "$DOTFILES/scripts/theme"              "$HOME/.local/bin/theme"
 	link "$HOME/.local/bin/journal"             "$HOME/.local/bin/j"
 
 	if dotfiles_platform_is omarchy; then
 		link_omarchy
+	else
+		# First run only: apply the default theme. Git sources are fetched
+		# with `theme update`, which needs network and ssh keys.
+		bash "$DOTFILES/scripts/theme" init
 	fi
 
 	cleanup
