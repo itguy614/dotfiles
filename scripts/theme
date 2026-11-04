@@ -3,13 +3,17 @@
 # theme -- switch every themed app (ghostty, tmux, neovim, bat/delta) at once.
 #
 #   theme list                         themes from every source, * = active
+#   theme                              pick a theme from a menu, previewed live (fzf)
+#   theme pick                         same as above
 #   theme set <name>                   apply a theme ("HCL Dark" or "app-themes:HCL Dark")
+#   theme use <name>                   alias for set
 #   theme current                      print the active theme
 #   theme update                       clone/pull the git sources, re-apply the active theme
 #   theme source list                  registered sources
 #   theme source add <name> <url> [ref]  register and clone a git source
 #   theme source rm <name>             unregister and delete its clone
-#   theme init                         apply the default theme if none is set (used by install)
+#   theme init                         apply the default theme if none is set and fetch any
+#                                      git source not cloned yet (used by install)
 #
 # A source is a directory in the layout of gohcl/app-themes' dist/:
 #
@@ -267,20 +271,24 @@ apply_theme() { # source slug display [quiet]
 	# Written last so nvim's mtime check sees a finished switch.
 	printf '%s:%s\n' "$src" "$display" > "$CURRENT/theme"
 
+	if [ "$quiet" = preview ]; then reload_apps quiet; return 0; fi
 	[ -n "$quiet" ] && return 0
 	info "applied $src:$display to:${applied:- nothing}"
 	[ -n "$skipped" ] && info "no theme files for:$skipped"
 	reload_apps
 }
 
-reload_apps() {
+reload_apps() { # [quiet]
+	local say=info
+	[ -n "${1:-}" ] && say=:
 	if [ -e "$CURRENT/tmux.conf" ] && command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
-		tmux source-file -q "$CURRENT/tmux.conf" && info "reloaded tmux"
+		tmux source-file -q "$CURRENT/tmux.conf" && $say "reloaded tmux"
 	fi
 	if pgrep -x ghostty >/dev/null 2>&1; then
 		# Ghostty re-reads its config on SIGUSR2.
-		pkill -USR2 -x ghostty && info "reloaded ghostty"
+		pkill -USR2 -x ghostty && $say "reloaded ghostty"
 	fi
+	[ -n "${1:-}" ] && return 0
 	info "neovim picks it up on focus; new shells pick up BAT_THEME (exec zsh)"
 }
 
@@ -319,12 +327,87 @@ cmd_current() {
 
 cmd_init() {
 	dotfiles_platform_is omarchy && return 0
-	[ -f "$CURRENT/theme" ] && return 0
+	local line src slug display name url ref fetched=''
+
+	if [ ! -f "$CURRENT/theme" ]; then
+		if line=$(resolve_theme "local:$DEFAULT_THEME"); then
+			IFS=$'\t' read -r src slug display <<<"$line"
+			apply_theme "$src" "$slug" "$display" quiet
+			info "theme: default is $src:$display"
+		else
+			warn "theme: default '$DEFAULT_THEME' not found in local themes"
+		fi
+	fi
+
+	# Fetch git sources that are not cloned yet. Best effort: install must not
+	# hang on a missing ssh key, so never prompt and give up after a few seconds.
+	while read -r name url ref; do
+		[ -n "$name" ] || continue
+		[ -d "$DATA/$name" ] && continue
+		if GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -o BatchMode=yes -o ConnectTimeout=8' \
+			clone_source "$name" "$url" "${ref:-}" 2>/dev/null; then
+			fetched="$fetched $name"
+		else
+			warn "theme: could not clone source '$name' ($url); run: theme update"
+		fi
+	done < <(git_sources)
+	[ -n "$fetched" ] && info "theme: fetched sources:$fetched"
+	return 0
+}
+
+# Interactive picker. Moving the cursor applies each theme live; Enter keeps
+# it, Esc/Ctrl-C restores whatever was active.
+cmd_pick() {
+	omarchy_guard
+	[ -t 0 ] && [ -t 1 ] || die "pick needs a terminal (try: theme list, theme set <name>)"
+
+	local cur='' s sl d lines pos=1 n=0 choice
+	[ -f "$CURRENT/theme" ] && cur=$(cat "$CURRENT/theme")
+	lines=$(all_themes | while IFS=$'\t' read -r s sl d; do
+		printf '%s:%s\t[%s]\n' "$s" "$d" "$(apps_for "$s" "$sl")"
+	done)
+	[ -n "$lines" ] || die "no themes found (run: theme update)"
+	while IFS=$'\t' read -r d _; do
+		n=$((n + 1))
+		[ "$d" = "$cur" ] && pos=$n
+	done <<<"$lines"
+
+	if ! command -v fzf >/dev/null 2>&1; then
+		# No fzf: plain numbered menu, no live preview.
+		local i=0 name
+		while IFS=$'\t' read -r name d; do
+			i=$((i + 1))
+			printf '%3d) %-34s %s\n' "$i" "$name" "$d"
+		done <<<"$lines"
+		read -r -p "theme number (enter to cancel): " choice || return 0
+		case $choice in ''|*[!0-9]*) return 0 ;; esac
+		choice=$(printf '%s\n' "$lines" | sed -n "${choice}p" | cut -f1)
+		[ -n "$choice" ] || die "no such number"
+		cmd_set "$choice"
+		return
+	fi
+
+	local self=$_src
+	choice=$(printf '%s\n' "$lines" | fzf \
+		--delimiter=$'\t' --with-nth=1,2 --nth=1 --no-sort --reverse --height=60% \
+		--prompt='theme> ' --header="current: ${cur:-none}   (moving previews, enter keeps, esc cancels)" \
+		--bind "start:pos($pos)" \
+		--bind "focus:execute-silent(bash '$self' _preview {1})") || {
+		# Cancelled: put the original back.
+		if [ -n "$cur" ]; then
+			bash "$self" _preview "$cur"
+		fi
+		return 0
+	}
+	choice=${choice%%$'\t'*}
+	cmd_set "$choice"
+}
+
+cmd__preview() {
 	local line src slug display
-	line=$(resolve_theme "local:$DEFAULT_THEME") || return 0
+	line=$(resolve_theme "$*") || return 1
 	IFS=$'\t' read -r src slug display <<<"$line"
-	apply_theme "$src" "$slug" "$display" quiet
-	info "theme: default is $src:$display"
+	apply_theme "$src" "$slug" "$display" preview
 }
 
 cmd_update() {
@@ -386,11 +469,14 @@ usage() { sed -n '2,/^$/p' "$0" | sed 's/^#\( \{0,1\}\)//'; }
 
 case ${1:-} in
 	list|ls)  cmd_list ;;
-	set)      shift; cmd_set "$@" ;;
+	set|use)  shift; cmd_set "$@" ;;
+	pick|menu) cmd_pick ;;
+	_preview) shift; cmd__preview "$@" ;;
 	current)  cmd_current ;;
 	update)   cmd_update ;;
 	source)   shift; cmd_source "$@" ;;
 	init)     cmd_init ;;
-	-h|--help|help|'') usage ;;
+	'')       if [ -t 0 ] && [ -t 1 ]; then cmd_pick; else usage; fi ;;
+	-h|--help|help) usage ;;
 	*) usage >&2; exit 1 ;;
 esac

@@ -49,7 +49,8 @@ This is a **dotfiles repository** containing configuration files for development
 
 `scripts/theme` (linked to `~/.local/bin/theme`) switches ghostty, tmux, neovim and bat/delta in one shot. VS Code is out of scope.
 
-- `theme list | set <name> | current | update`, `theme source list|add|rm`
+- `theme` (no args, or `theme pick`) opens an fzf menu that previews each theme live as the cursor moves; Enter keeps it, Esc restores the old one
+- `theme list | set <name> | use <name> | current | update | init`, `theme source list|add|rm` (`use` = `set`; `init` applies the default and clones any missing git source)
 - Sources: built-in `local` (`themes/local/`) plus git repos listed in `~/.config/themes/sources` (`name url [ref]`), cloned to `~/.local/share/themes/sources`. `gohcl/app-themes` is registered by default; run `theme update` to fetch it
 - `set` links each app's file into `~/.local/state/themes/current/` (`ghostty.conf`, `tmux.conf`, `neovim/` + `neovim.colorscheme`, `bat.theme`), then reloads tmux and ghostty (SIGUSR2). `ghostty/config`, `tmux/tmux.conf`, `nvim/lua/user/theme.lua` and `shell/env.sh` (`BAT_THEME`) read that state
 - Apps a theme has no file for are skipped; Omarchy is left to `omarchy-theme-set` and the tool refuses to run there
