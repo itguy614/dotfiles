@@ -18,6 +18,7 @@ This is a **dotfiles repository** containing configuration files for development
   - `env.sh` - `PATH` helpers, `EDITOR`, exported environment
   - `aliases.sh` - every alias (git, Laravel, composer, navigation)
   - `functions.sh` - `db`, `gi`, and friends
+  - `theme.sh` - `BAT_THEME` from the active theme; sourced last because Omarchy's envs set their own
 - **`starship/`** - Prompt config, linked on every platform including Omarchy
   - Uses ANSI color names, not hex, so the prompt follows the terminal palette (this is what makes it track `omarchy-theme-set` — nothing themes the file itself)
 - **`omarchy/`** - Omarchy desktop overrides (`hypr/`); only files diverging from `/etc/skel`
@@ -53,7 +54,8 @@ This is a **dotfiles repository** containing configuration files for development
 - `theme list | set <name> | use <name> | current | update | init`, `theme source list|add|rm` (`use` = `set`; `init` applies the default and clones any missing git source)
 - Sources: built-in `local` (`themes/local/`) plus git repos listed in `~/.config/themes/sources` (`name url [ref]`), cloned to `~/.local/share/themes/sources`. `gohcl/app-themes` is registered by default; run `theme update` to fetch it
 - `set` links each app's file into `~/.local/state/themes/current/` (`ghostty.conf`, `tmux.conf`, `neovim/` + `neovim.colorscheme`, `bat.theme`), then reloads tmux and ghostty (SIGUSR2). `ghostty/config`, `tmux/tmux.conf`, `nvim/lua/user/theme.lua` and `shell/env.sh` (`BAT_THEME`) read that state
-- Apps a theme has no file for are skipped; Omarchy is left to `omarchy-theme-set` and the tool refuses to run there
+- Apps a theme has no file for are skipped. On Omarchy `set`/`pick`/`current`/`list` go through `omarchy-theme-set` instead (exporting the theme first if needed); the picker has no live preview there because that switch is heavy
+- `theme export-omarchy` puts source themes where `omarchy-theme-switcher` / `omarchy-theme-set` find them (`~/.config/omarchy/themes/<slug>/`). A source shipping `dist/omarchy/` (app-themes) is linked by its own `install-omarchy.sh`, so the dirs follow the clone; any other source's themes are derived from the ghostty palette (`colors.toml` + the ghostty file + nvim/bat files) and marked with `.dotfiles-theme`, and dirs without that marker are never overwritten. It also registers each bat theme with bat. tmux follows through the ANSI palette (`tmux/theme.omarchy`); neovim and bat read `neovim.colorscheme` / `bat.theme` from `~/.local/state/omarchy/current/theme` (`nvim/lua/user/theme.lua`, `shell/theme.sh`), and a stock Omarchy theme, which has none, sends nvim back to its configured scheme
 - Add a local theme by dropping files into `themes/local/` using the layout above
 
 ## Installation & Setup

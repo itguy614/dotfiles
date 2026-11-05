@@ -94,6 +94,7 @@ command -v direnv &>/dev/null && plugins+=(direnv)
 # After oh-my-zsh and after the platform layer, so these win every collision.
 source "$DOTFILES/shell/aliases.sh"
 source "$DOTFILES/shell/functions.sh"
+source "$DOTFILES/shell/theme.sh"
 
 #--------------------------------------------------------------------------
 # Completions

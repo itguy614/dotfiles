@@ -14,6 +14,8 @@
 #   theme source rm <name>             unregister and delete its clone
 #   theme init                         apply the default theme if none is set and fetch any
 #                                      git source not cloned yet (used by install)
+#   theme export-omarchy               link/write every source theme into
+#                                      ~/.config/omarchy/themes, for omarchy-theme-set
 #
 # A source is a directory in the layout of gohcl/app-themes' dist/:
 #
@@ -29,8 +31,8 @@
 #
 # Applying a theme links each app's file into ~/.local/state/themes/current/,
 # which the app configs include, then reloads whatever is running. Apps a theme
-# has no file for are skipped. Omarchy owns theming on its machines, so this
-# tool refuses to apply there.
+# has no file for are skipped. On Omarchy, set/pick call omarchy-theme-set with
+# the themes `export-omarchy` handed it, which also sets nvim and bat.
 
 set -uo pipefail
 
@@ -63,10 +65,15 @@ slug() {
 		| sed -e 's/[^a-z0-9]\{1,\}/-/g' -e 's/^-//' -e 's/-$//'
 }
 
-omarchy_guard() {
-	if dotfiles_platform_is omarchy; then
-		die "Omarchy owns theming on this machine; use omarchy-theme-set"
-	fi
+OMARCHY_STATE=${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/current
+
+# On Omarchy the switch is omarchy-theme-set: it applies Omarchy's own theme and,
+# from an exported package, nvim and bat too (see export-omarchy). It is heavy
+# (wallpaper transition, app restarts), so there is no live preview there.
+omarchy_set() { # slug
+	local dir=${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/themes/$1
+	[ -e "$dir" ] || cmd_export_omarchy >/dev/null
+	omarchy-theme-set "$1"
 }
 
 #--------------------------------------------------------------------------
@@ -299,12 +306,15 @@ reload_apps() { # [quiet]
 cmd_list() {
 	local cur='' s sl d apps mark missing=''
 	[ -f "$CURRENT/theme" ] && cur=$(cat "$CURRENT/theme")
+	local om=''
+	dotfiles_platform_is omarchy && om=$(cat "$OMARCHY_STATE/theme.name" 2>/dev/null)
 	for s in $(source_names); do
 		[ -d "$(source_assets "$s")" ] || missing="$missing $s"
 	done
 	all_themes | while IFS=$'\t' read -r s sl d; do
 		mark=' '
 		[ "$s:$d" = "$cur" ] && mark='*'
+		[ -n "$om" ] && [ "$sl" = "$om" ] && mark='*'
 		apps=$(apps_for "$s" "$sl")
 		printf '%s %-34s %s\n' "$mark" "$s:$d" "[$apps]"
 	done
@@ -313,16 +323,143 @@ cmd_list() {
 }
 
 cmd_set() {
-	omarchy_guard
 	[ $# -ge 1 ] || die "usage: theme set <name>"
 	local line src slug display
-	line=$(resolve_theme "$*") || die "no theme matching '$*' (see: theme list)"
+	if ! line=$(resolve_theme "$*"); then
+		# Omarchy's own themes are not in any source; leave those to it.
+		dotfiles_platform_is omarchy && { omarchy-theme-set "$*"; return; }
+		die "no theme matching '$*' (see: theme list)"
+	fi
 	IFS=$'\t' read -r src slug display <<<"$line"
+	if dotfiles_platform_is omarchy; then omarchy_set "$slug"; return; fi
 	apply_theme "$src" "$slug" "$display"
 }
 
 cmd_current() {
+	if dotfiles_platform_is omarchy; then cat "$OMARCHY_STATE/theme.name"; return; fi
 	[ -f "$CURRENT/theme" ] && cat "$CURRENT/theme" || { echo "none"; return 1; }
+}
+
+# ghostty_value <file> <key>: value of a "key = value" line.
+ghostty_value() {
+	awk -F' *= *' -v k="$2" '$1 == k { print $2; exit }' "$1"
+}
+
+# ghostty_palette <file> <n>: color n from "palette = n=#rrggbb".
+ghostty_palette() {
+	awk -F'[ =]+' -v n="$2" '$1 == "palette" && $2 == n { print $3; exit }' "$1"
+}
+
+# Omarchy builds every app's config from colors.toml, so converting a ghostty
+# palette is enough for it to theme the whole desktop. The ghostty file ships
+# alongside, which Omarchy keeps over its own template, so our ANSI mapping
+# survives (its template would put the background in slot 0).
+write_omarchy_theme() { # ghostty-file dir
+	local g=$1 dir=$2 bg fg mode
+	bg=$(ghostty_value "$g" background)
+	fg=$(ghostty_value "$g" foreground)
+	mode=$(awk -v h="${bg#\#}" 'BEGIN {
+		l = (strtonum("0x" substr(h,1,2)) * 299 + strtonum("0x" substr(h,3,2)) * 587 + strtonum("0x" substr(h,5,2)) * 114) / 1000
+		print (l > 128) ? "light" : "dark" }')
+	mkdir -p "$dir"
+	{
+		printf 'mode = "%s"\n\n' "$mode"
+		printf 'accent = "%s"\n' "$(ghostty_value "$g" cursor-color)"
+		printf 'cursor = "%s"\n' "$(ghostty_value "$g" cursor-color)"
+		printf 'selection = "%s"\n' "$(ghostty_value "$g" selection-background)"
+		printf 'selection_background = "%s"\n' "$(ghostty_value "$g" selection-background)"
+		printf 'selection_foreground = "%s"\n' "$(ghostty_value "$g" selection-foreground)"
+		printf 'muted = "%s"\n\n' "$(ghostty_palette "$g" 8)"
+		printf 'background = "%s"\nforeground = "%s"\n' "$bg" "$fg"
+		printf 'bright_foreground = "%s"\n\n' "$(ghostty_palette "$g" 15)"
+		local n=1 c
+		for c in red green yellow blue magenta cyan; do
+			printf '%s = "%s"\n' "$c" "$(ghostty_palette "$g" "$n")"
+			n=$((n + 1))
+		done
+		printf 'orange = "%s"\n\n' "$(ghostty_palette "$g" 3)"
+		n=9
+		for c in red green yellow blue magenta cyan; do
+			printf 'bright_%s = "%s"\n' "$c" "$(ghostty_palette "$g" "$n")"
+			n=$((n + 1))
+		done
+	} > "$dir/colors.toml"
+	cp "$g" "$dir/ghostty.conf"
+}
+
+# The non-color apps travel inside the Omarchy theme dir, in the same layout as
+# our state dir, so nvim and the shell can read either one.
+export_omarchy_apps() { # source slug dir
+	local a f
+	a=$(source_assets "$1")
+	rm -rf -- "${3:?}/neovim" "$3/neovim.colorscheme" "$3/bat.theme"
+
+	if f=$(find_asset "$a/neovim/colors" .lua "$2"); then
+		mkdir -p "$3/neovim/colors"
+		cp "$f" "$3/neovim/colors/"
+		[ -d "$a/neovim/lua" ] && cp -R "$a/neovim/lua" "$3/neovim/"
+		basename "$f" .lua > "$3/neovim.colorscheme"
+	elif f=$(find_asset "$a/neovim/colorscheme" '' "$2"); then
+		head -n1 "$f" > "$3/neovim.colorscheme"
+	fi
+
+	if f=$(find_asset "$a/bat/themes" .tmTheme "$2"); then
+		basename "$f" .tmTheme > "$3/bat.theme"
+		install_bat_theme "$f"
+	fi
+}
+
+# Themes land in ~/.config/omarchy/themes either way. A source that ships whole
+# Omarchy themes in dist/omarchy/ (app-themes does) is linked by its own
+# install-omarchy.sh; the links follow the clone, so `theme update` is enough
+# later. Anything else is derived from its ghostty palette, so a source with no
+# Omarchy package still shows up.
+cmd_export_omarchy() {
+	local dest=${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/themes
+	local s sl d a root g f dir n=0 skipped=0 pkg
+	mkdir -p "$dest"
+	for s in $(source_names); do
+		a=$(source_assets "$s")
+		[ -d "$a" ] || continue
+		root=${a%/dist}
+		pkg=''
+		if [ -x "$root/install-omarchy.sh" ] && [ -d "$a/omarchy" ]; then
+			pkg=$(ls "$a/omarchy")
+			# Replace what an earlier derived export left; the installer only links over symlinks.
+			for sl in $pkg; do
+				dir=$dest/$sl
+				[ ! -L "$dir" ] && [ -f "$dir/.dotfiles-theme" ] && rm -rf -- "${dir:?}"
+			done
+			if "$root/install-omarchy.sh" >/dev/null; then
+				n=$((n + $(echo "$pkg" | wc -l)))
+			else
+				warn "$s: install-omarchy.sh skipped some themes (re-run it with --force to replace them)"
+				skipped=$((skipped + 1))
+			fi
+			# bat.theme only names the theme; bat still has to be given the file.
+			for sl in $pkg; do
+				[ -f "$a/omarchy/$sl/bat.theme" ] || continue
+				f=$(find_asset "$a/bat/themes" .tmTheme "$sl") && install_bat_theme "$f"
+			done
+		fi
+
+		while IFS=$'\t' read -r _ sl d; do
+			echo "$pkg" | grep -qx -- "$sl" && continue
+			g=$(find_asset "$a/ghostty/themes" '' "$sl") || continue
+			dir=$dest/$sl
+			# Only replace a directory this command wrote; anything else is the user's.
+			if [ -e "$dir" ] && [ ! -f "$dir/.dotfiles-theme" ]; then
+				warn "$dir exists and is not ours, skipped"; skipped=$((skipped + 1)); continue
+			fi
+			write_omarchy_theme "$g" "$dir"
+			export_omarchy_apps "$s" "$sl" "$dir"
+			printf '%s:%s\n' "$s" "$d" > "$dir/.dotfiles-theme"
+			n=$((n + 1))
+		done < <(themes_in "$s")
+	done
+	info "exported $n theme(s) to $dest${skipped:+ ($skipped source(s) skipped something)}"
+	[ "$n" -gt 0 ] && info "pick one with omarchy-theme-switcher or: omarchy-theme-set <name>"
+	return 0
 }
 
 cmd_init() {
@@ -356,12 +493,13 @@ cmd_init() {
 }
 
 # Interactive picker. Moving the cursor applies each theme live; Enter keeps
-# it, Esc/Ctrl-C restores whatever was active.
+# it, Esc/Ctrl-C restores whatever was active. On Omarchy there is no preview:
+# Enter applies the choice with omarchy-theme-set.
 cmd_pick() {
-	omarchy_guard
 	[ -t 0 ] && [ -t 1 ] || die "pick needs a terminal (try: theme list, theme set <name>)"
 
-	local cur='' s sl d lines pos=1 n=0 choice
+	local cur='' s sl d lines pos=1 n=0 choice live=1
+	dotfiles_platform_is omarchy && live=0
 	[ -f "$CURRENT/theme" ] && cur=$(cat "$CURRENT/theme")
 	lines=$(all_themes | while IFS=$'\t' read -r s sl d; do
 		printf '%s:%s\t[%s]\n' "$s" "$d" "$(apps_for "$s" "$sl")"
@@ -387,14 +525,18 @@ cmd_pick() {
 		return
 	fi
 
-	local self=$_src
+	local self=$_src header="current: ${cur:-none}   (moving previews, enter keeps, esc cancels)"
+	local -a live_args=(--bind "focus:execute-silent(bash '$self' _preview {1})")
+	if [ $live = 0 ]; then
+		header="current: $(cmd_current)   (enter applies, esc cancels)"
+		live_args=()
+	fi
 	choice=$(printf '%s\n' "$lines" | fzf \
 		--delimiter=$'\t' --with-nth=1,2 --nth=1 --no-sort --reverse --height=60% \
-		--prompt='theme> ' --header="current: ${cur:-none}   (moving previews, enter keeps, esc cancels)" \
-		--bind "start:pos($pos)" \
-		--bind "focus:execute-silent(bash '$self' _preview {1})") || {
+		--prompt='theme> ' --header="$header" \
+		--bind "start:pos($pos)" "${live_args[@]}") || {
 		# Cancelled: put the original back.
-		if [ -n "$cur" ]; then
+		if [ $live = 1 ] && [ -n "$cur" ]; then
 			bash "$self" _preview "$cur"
 		fi
 		return 0
@@ -476,6 +618,7 @@ case ${1:-} in
 	update)   cmd_update ;;
 	source)   shift; cmd_source "$@" ;;
 	init)     cmd_init ;;
+	export-omarchy) cmd_export_omarchy ;;
 	'')       if [ -t 0 ] && [ -t 1 ]; then cmd_pick; else usage; fi ;;
 	-h|--help|help) usage ;;
 	*) usage >&2; exit 1 ;;

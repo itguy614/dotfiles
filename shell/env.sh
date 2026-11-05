@@ -54,8 +54,3 @@ export VISUAL=nvim
 # GnuPG
 export GPG_TTY=$(tty)
 export GPGKEY=8060A02E
-
-# bat (and delta, which honours it) follow the theme manager's active theme.
-_bat_theme="${XDG_STATE_HOME:-$HOME/.local/state}/themes/current/bat.theme"
-[ -r "$_bat_theme" ] && export BAT_THEME="$(cat "$_bat_theme")"
-unset _bat_theme

@@ -244,6 +244,10 @@ link_omarchy() {
 		mv "$HOME/.config/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf.backup-$STAMP"
 		info "moved Omarchy's tmux.conf aside (~/.tmux.conf now wins)"
 	fi
+
+	# Hand Omarchy the app-themes themes. Needs the source cloned (theme update);
+	# until then only the local themes export, so this is never fatal.
+	"$DOTFILES/scripts/theme" export-omarchy || warn "theme export-omarchy failed"
 }
 
 cleanup() {
