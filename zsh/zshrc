@@ -9,13 +9,6 @@ source "$DOTFILES/lib/platform.sh"
 source "$DOTFILES/shell/env.sh"
 
 #--------------------------------------------------------------------------
-# Tmux auto-attach
-#--------------------------------------------------------------------------
-# Early on purpose: when this execs into tmux the rc is re-run inside the new
-# session, so there is no point configuring the outer shell first.
-[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
-
-#--------------------------------------------------------------------------
 # Zsh options
 #--------------------------------------------------------------------------
 HYPHEN_INSENSITIVE="true"
@@ -83,6 +76,15 @@ command -v direnv &>/dev/null && plugins+=(direnv)
 
 # Machine-specific overrides, untracked.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+#--------------------------------------------------------------------------
+# Tmux auto-attach
+#--------------------------------------------------------------------------
+# After the platform layer so Homebrew's PATH (zsh/zshrc.macos) is in place
+# before this checks for tmux, but still before oh-my-zsh so this runs before
+# the "tmux" plugin shadows the tmux command with its own wrapper. When this
+# execs into tmux, the rc re-runs inside the new session with $TMUX set.
+[[ -f ~/.tmux.zsh ]] && source ~/.tmux.zsh
 
 [[ -d "$ZSH" ]] && source "$ZSH/oh-my-zsh.sh"
 
