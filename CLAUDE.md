@@ -96,15 +96,19 @@ The same mechanism drives `~/.gitconfig.os`, `~/.tmux.theme.conf`, and
 ### Claude Code Settings
 Located in `claude/settings.json`. Key configurations:
 - **Model**: set in `claude/settings.json` (currently `opusplan`; subagents use `sonnet` via `CLAUDE_CODE_SUBAGENT_MODEL` in `env`)
-- **Permissions**: Allows file read/write, git operations, npm/yarn, web fetching
-- **Denied**: `.env` files, `node_modules/`, `build/` dirs, `rm/sudo/curl/wget` commands, git push
-- **Hooks**: 
-  - Auto-format with Prettier (Edit/Write)
-  - TypeScript type checking (Edit *.ts/*.tsx)
-  - Python Black formatting & flake8 linting (Edit/Write *.py)
-  - JSON validation with jq (Edit/Write *.json)
-  - .env file protection (PreToolUse Read)
-  - Session start notification
+- **Mode**: `defaultMode` is `auto`; the sandbox is disabled
+- **Allowed**: file read/write/edit, search tools, `Bash(git:*)` (all git subcommands, including push and force push), `npm`, `yarn`, `ls`, `cat`, `echo`, `grep`, web fetch/search, agents, and a few read-only Atlassian MCP tools
+- **Denied**:
+  - Reads of `./secrets/**`, `./config/credentials.json`, `node_modules/`, `build/`, `dist/`, `.next/`, `target/`
+  - Edits of `build/`, `dist/`, `production.config.*`, `prod.config.*`, `kubernetes/`, `terraform/`
+  - Bash `sudo`, `su`, `chmod`, `chown`, and any command containing `deploy` or `publish`
+- **Not restricted**: `rm`, `curl`, `wget`, `git push` (including `--force`), and reading `.env` files. `ask` is empty and there are no `PreToolUse` hooks
+- **Hooks** (`PostToolUse` on Edit/Write/MultiEdit, by extension):
+  - `*.js`: Prettier
+  - `*.ts`/`*.tsx`: `tsc --noEmit` type check (only if the project has a local `tsc`)
+  - `*.py`: Black formatting, then flake8 (findings are reported back)
+  - `*.json`: validity check with `jq`
+  - `SessionStart`: prints a session-started notice
 
 ### Neovim Configuration
 - **Plugin Manager**: Lazy.nvim (modern, fast)
@@ -133,15 +137,15 @@ Located in `claude/settings.json`. Key configurations:
 ## Configuration Notes
 
 ### File Permissions in Claude Code
-The repository is locked down for safety. Claude Code:
-- ✅ **Can**: Read/write most files, run git commands, run npm/yarn scripts, fetch web content
-- ❌ **Cannot**: Read .env files, delete files, use sudo/curl/wget, push to git, publish packages, modify kubernetes/terraform configs
+Permissions are moderately restrictive, not locked down. Claude Code:
+- ✅ **Can**: Read/write most files, run any git command (push and force push included), run npm/yarn scripts, fetch web content, and use `rm`, `curl`, `wget`; reading `.env` is not blocked
+- ❌ **Cannot**: use `sudo`/`su`/`chmod`/`chown`, run commands containing `deploy` or `publish`, read secrets/credentials or build output (`node_modules/`, `build/`, `dist/`, `.next/`, `target/`), or edit `build/`, `dist/`, prod configs, `kubernetes/`, `terraform/`
 
 ### Hooks & Auto-Formatting
-All file edits/writes trigger auto-formatting and validation via hooks defined in `claude/settings.json`:
-- Prettier formatting for JS/TS/JSON
+Edits/writes trigger validation via `PostToolUse` hooks defined in `claude/settings.json`:
+- Prettier for `.js` files only
 - Black & flake8 for Python
-- TypeScript type checking
+- TypeScript type checking (when the project has a local `tsc`)
 - JSON validation
 
 ### Installation Requirements
@@ -186,4 +190,4 @@ Plugins use Lazy.nvim - see `nvim/lazy-lock.json` for current versions.
 - **Omarchy**: never run `omarchy-setup-zsh` — it regenerates `~/.zshrc` from its own template and replaces our symlink. Omarchy owns theming; configs follow `~/.local/state/omarchy/current/theme/`
 - **OS-Specific Config**: Git and zsh configs include OS-specific variants (check for `.linux`/`.macos` suffixes)
 - **Ignored Files**: `nvim/lazy-lock.json` and `*.bak` are gitignored (see `.gitignore`)
-- **Hooks Override**: Claude Code settings in this repo prioritize security over convenience (e.g., denying .env reads)
+- **Claude Code settings**: a small deny list plus broad git/npm allowances; there is no force-push or `.env` protection. See `claude/settings.json`
